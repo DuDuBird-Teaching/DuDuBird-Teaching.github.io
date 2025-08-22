@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧学习平台 - 专业的在线教学网站</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* 导航栏样式 */
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin: 0 15px;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 主内容区样式 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* 分类导航 */
+        .category-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-header {
+            padding: 1.5rem;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .thinking .category-header {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+        }
+        
+        .math .category-header {
+            background: linear-gradient(135deg, #4ECDC4, #556270);
+        }
+        
+        .physics .category-header {
+            background: linear-gradient(135deg, #C2E59C, #64B3F4);
+        }
+        
+        .computer .category-header {
+            background: linear-gradient(135deg, #9CECFB, #65C7F7, #0052D4);
+        }
+        
+        .subcategories {
+            padding: 1.5rem;
+        }
+        
+        .subcategory {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .subcategory:last-child {
+            border-bottom: none;
+        }
+        
+        /* 课程内容区 */
+        .course-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .course-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .lessons-list {
+            list-style: none;
+        }
+        
+        .lesson-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .lesson-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .back-button {
+            background: #4a6491;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        
+        /* 页脚样式 */
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .footer-links li {
+            margin: 0 15px;
+        }
+        
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+                display: none;
+            }
+            
+            .category-nav {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="nav-container">
+            <div class="logo">
+                <span>智慧学习平台</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#" class="nav-link">首页</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">关于我们</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">教师团队</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">联系我们</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <div class="container">
+        <!-- 欢迎横幅 -->
+        <div class="hero">
+            <h1>开启您的学习之旅</h1>
+            <p>我们提供思维训练、数学、物理和计算机科学的高质量课程，帮助您提升技能，拓展知识边界。</p>
+        </div>
+
+        <!-- 分类导航 -->
+        <h2>课程分类</h2>
+        <div class="category-nav">
+            <!-- 思维训练 -->
+            <div class="category-card thinking" onclick="showCourse('thinking')">
+                <div class="category-header">
+                    <h3>思维训练</h3>
+                </div>
+                <div class="subcategories">
+                    <div class="subcategory">逻辑思维</div>
+                    <div class="subcategory">创造性思维</div>
+                    <div class="subcategory">批判性思维</div>
+                </div>
+            </div>
+
+            <!-- 数学教学 -->
+            <div class="category-card math" onclick="showCourse('math')">
+                <div class="category-header">
+                    <h3>数学教学</h3>
+                </div>
+                <div class="subcategories">
+                    <div class="subcategory">基础数学</div>
+                    <div class="subcategory">代数</div>
+                    <div class="subcategory">几何</div>
+                </div>
+            </div>
+
+            <!-- 物理教学 -->
+            <div class="category-card physics" onclick="showCourse('physics')">
+                <div class="category-header">
+                    <h3>物理教学</h3>
+                </div>
+                <div class="subcategories">
+                    <div class="subcategory">力学</div>
+                    <div class="subcategory">电磁学</div>
+                    <div class="subcategory">热力学</div>
+                </div>
+            </div>
+
+            <!-- 计算机教学 -->
+            <div class="category-card computer" onclick="showCourse('computer')">
+                <div class="category-header">
+                    <h3>计算机教学</h3>
+                </div>
+                <div class="subcategories">
+                    <div class="subcategory">编程基础</div>
+                    <div class="subcategory">数据结构</div>
+                    <div class="subcategory">算法</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 课程内容区 -->
+        <div id="course-content" class="course-content">
+            <button class="back-button" onclick="hideCourse()">返回分类</button>
+            <div class="course-header">
+                <h2 id="course-title">课程标题</h2>
+                <p id="course-description">课程描述将显示在这里</p>
+            </div>
+            <ul class="lessons-list" id="lessons-list">
+                <!-- 课程列表将由JavaScript动态生成 -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <p>智慧学习平台 &copy; 2023 版权所有</p>
+            <ul class="footer-links">
+                <li><a href="#">隐私政策</a></li>
+                <li><a href="#">使用条款</a></li>
+                <li><a href="#">帮助中心</a></li>
+                <li><a href="#">常见问题</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        // 课程数据
+        const courses = {
+            thinking: {
+                title: "思维训练",
+                description: "提升您的思维能力，学习如何更有效地分析和解决问题。",
+                subcategories: {
+                    "逻辑思维": ["逻辑基础", "演绎推理", "归纳推理", "逻辑谬误"],
+                    "创造性思维": ["创新技巧", "头脑风暴", "思维导图", "问题重构"],
+                    "批判性思维": ["论证分析", "证据评估", "决策制定", "认知偏见"]
+                }
+            },
+            math: {
+                title: "数学教学",
+                description: "从基础到高级，掌握数学的核心概念和解题技巧。",
+                subcategories: {
+                    "基础数学": ["算术运算", "分数与小数", "基本几何", "初等代数"],
+                    "代数": ["线性方程", "多项式", "函数", "矩阵"],
+                    "几何": ["平面几何", "立体几何", "三角学", "解析几何"]
+                }
+            },
+            physics: {
+                title: "物理教学",
+                description: "探索自然世界的规律，理解宇宙运行的基本原理。",
+                subcategories: {
+                    "力学": ["牛顿定律", "功与能", "动量", "万有引力"],
+                    "电磁学": ["静电学", "电路", "磁场", "电磁波"],
+                    "热力学": ["温度与热", "热力学定律", "熵", "热机"]
+                }
+            },
+            computer: {
+                title: "计算机教学",
+                description: "学习编程和计算机科学，掌握数字时代的核心技能。",
+                subcategories: {
+                    "编程基础": ["Python入门", "控制结构", "函数", "基本算法"],
+                    "数据结构": ["数组与链表", "栈与队列", "树结构", "图论"],
+                    "算法": ["排序算法", "搜索算法", "动态规划", "算法复杂度"]
+                }
+            }
+        };
+
+        // 显示课程详情
+        function showCourse(courseId) {
+            const course = courses[courseId];
+            document.getElementById('course-title').textContent = course.title;
+            document.getElementById('course-description').textContent = course.description;
+            
+            // 生成课程列表
+            const lessonsList = document.getElementById('lessons-list');
+            lessonsList.innerHTML = '';
+            
+            for (const [subcategory, lessons] of Object.entries(course.subcategories)) {
+                // 添加子分类标题
+                const subcategoryHeader = document.createElement('li');
+                subcategoryHeader.className = 'lesson-item';
+                subcategoryHeader.innerHTML = `<strong>${subcategory}</strong>`;
+                lessonsList.appendChild(subcategoryHeader);
+                
+                // 添加课程
+                lessons.forEach(lesson => {
+                    const lessonItem = document.createElement('li');
+                    lessonItem.className = 'lesson-item';
+                    lessonItem.innerHTML = `
+                        <span>${lesson}</span>
+                        <button>开始学习</button>
+                    `;
+                    lessonsList.appendChild(lessonItem);
+                });
+            }
+            
+            // 显示课程内容区
+            document.getElementById('course-content').style.display = 'block';
+            
+            // 滚动到课程内容区
+            document.getElementById('course-content').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 隐藏课程详情
+        function hideCourse() {
+            document.getElementById('course-content').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
