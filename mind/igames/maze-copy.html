@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小型迷宫游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #fdbb2d;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .maze-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-gap: 2px;
+            margin: 0 auto;
+            width: 400px;
+            height: 400px;
+            background: #2c3e50;
+            border: 3px solid #34495e;
+            border-radius: 5px;
+        }
+        
+        .cell {
+            background: #ecf0f1;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .wall {
+            background: #34495e;
+        }
+        
+        .start {
+            background: #2ecc71;
+        }
+        
+        .end {
+            background: #e74c3c;
+        }
+        
+        .player {
+            width: 80%;
+            height: 80%;
+            background: #3498db;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.7);
+        }
+        
+        .instructions {
+            margin: 25px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        #message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            height: 30px;
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        
+        .key {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #7f8c8d;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0 3px;
+        }
+        
+        @media (max-width: 500px) {
+            .maze-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>小型迷宫游戏</h1>
+        
+        <div class="game-info">
+            <div>移动步数: <span id="moves">0</span></div>
+            <div>时间: <span id="timer">0</span>秒</div>
+        </div>
+        
+        <div class="maze-container" id="maze">
+            <!-- 迷宫将通过JavaScript生成 -->
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="instructions">
+            <h3>游戏说明:</h3>
+            <p>使用键盘方向键 <span class="key">↑</span> <span class="key">↓</span> <span class="key">←</span> <span class="key">→</span> 移动蓝色角色</p>
+            <p>从 <span style="color:#2ecc71">绿色起点</span> 移动到 <span style="color:#e74c3c">红色终点</span></p>
+            <p>避开黑色墙壁，找到通往终点的路径</p>
+        </div>
+        
+        <div class="controls">
+            <button id="restart">重新开始</button>
+            <button id="new-maze">新迷宫</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mazeElement = document.getElementById('maze');
+            const movesElement = document.getElementById('moves');
+            const timerElement = document.getElementById('timer');
+            const messageElement = document.getElementById('message');
+            const restartButton = document.getElementById('restart');
+            const newMazeButton = document.getElementById('new-maze');
+            
+            let maze = [];
+            let playerPosition = { row: 0, col: 0 };
+            let moves = 0;
+            let timer = 0;
+            let timerInterval;
+            let gameActive = false;
+            
+            // 初始化迷宫
+            function initializeMaze() {
+                // 简单的10x10迷宫布局
+                // 0 = 路径, 1 = 墙壁, 2 = 起点, 3 = 终点
+                return [
+                    [2, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                    [1, 1, 0, 1, 1, 0, 1, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                    [1, 1, 1, 1, 1, 0, 1, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [1, 1, 0, 1, 1, 1, 1, 1, 1, 3]
+                ];
+            }
+            
+            // 渲染迷宫
+            function renderMaze() {
+                mazeElement.innerHTML = '';
+                for (let row = 0; row < maze.length; row++) {
+                    for (let col = 0; col < maze[row].length; col++) {
+                        const cell = document.createElement('div');
+                        cell.classList.add('cell');
+                        
+                        if (maze[row][col] === 1) {
+                            cell.classList.add('wall');
+                        } else if (maze[row][col] === 2) {
+                            cell.classList.add('start');
+                        } else if (maze[row][col] === 3) {
+                            cell.classList.add('end');
+                        }
+                        
+                        if (row === playerPosition.row && col === playerPosition.col) {
+                            const player = document.createElement('div');
+                            player.classList.add('player');
+                            cell.appendChild(player);
+                        }
+                        
+                        mazeElement.appendChild(cell);
+                    }
+                }
+            }
+            
+            // 开始游戏
+            function startGame() {
+                maze = initializeMaze();
+                playerPosition = { row: 0, col: 0 };
+                moves = 0;
+                timer = 0;
+                movesElement.textContent = moves;
+                timerElement.textContent = timer;
+                messageElement.textContent = '';
+                gameActive = true;
+                
+                renderMaze();
+                
+                // 开始计时器
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    if (gameActive) {
+                        timer++;
+                        timerElement.textContent = timer;
+                    }
+                }, 1000);
+            }
+            
+            // 移动玩家
+            function movePlayer(direction) {
+                if (!gameActive) return;
+                
+                let newRow = playerPosition.row;
+                let newCol = playerPosition.col;
+                
+                switch(direction) {
+                    case 'up':
+                        newRow--;
+                        break;
+                    case 'down':
+                        newRow++;
+                        break;
+                    case 'left':
+                        newCol--;
+                        break;
+                    case 'right':
+                        newCol++;
+                        break;
+                }
+                
+                // 检查移动是否有效
+                if (
+                    newRow >= 0 && 
+                    newRow < maze.length && 
+                    newCol >= 0 && 
+                    newCol < maze[0].length && 
+                    maze[newRow][newCol] !== 1
+                ) {
+                    playerPosition = { row: newRow, col: newCol };
+                    moves++;
+                    movesElement.textContent = moves;
+                    renderMaze();
+                    
+                    // 检查是否到达终点
+                    if (maze[newRow][newCol] === 3) {
+                        gameActive = false;
+                        clearInterval(timerInterval);
+                        messageElement.textContent = `恭喜！你用了${moves}步，耗时${timer}秒完成迷宫！`;
+                    }
+                }
+            }
+            
+            // 键盘事件监听
+            document.addEventListener('keydown', function(event) {
+                if (!gameActive) return;
+                
+                switch(event.key) {
+                    case 'ArrowUp':
+                        movePlayer('up');
+                        break;
+                    case 'ArrowDown':
+                        movePlayer('down');
+                        break;
+                    case 'ArrowLeft':
+                        movePlayer('left');
+                        break;
+                    case 'ArrowRight':
+                        movePlayer('right');
+                        break;
+                }
+            });
+            
+            // 按钮事件监听
+            restartButton.addEventListener('click', startGame);
+            newMazeButton.addEventListener('click', startGame);
+            
+            // 初始化游戏
+            startGame();
+        });
+    </script>
+</body>
+</html>

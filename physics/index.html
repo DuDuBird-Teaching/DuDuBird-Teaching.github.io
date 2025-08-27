@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>嘟嘟鸟物理课堂</title>
+	
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link rel="stylesheet" href="../.css/style.css">
+</head>
+
+><body>
+    <!-- 导航栏 -->
+	<header>
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>嘟嘟鸟教学课堂</span>
+                </div>
+				<div class="nav-links">
+					<a href="../index.html">首页</a>
+				</div>
+			</div>
+		</div>
+    </header>
+
+    <!-- 页脚 -->
+	<footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>嘟嘟鸟教学课堂</h3>
+                    <p>致力于提供高质量的在线数理思维训练服务，帮助每一位学习者实现自我突破。</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2025 嘟嘟鸟教学课堂小站. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // 简单的交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 课程卡片悬停效果
+            const courseCards = document.querySelectorAll('.course-card');
+            courseCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-10px)';
+                    card.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.1)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.05)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
