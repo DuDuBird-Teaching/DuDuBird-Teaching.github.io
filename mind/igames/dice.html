@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D骰子</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            width: 200px;
+            height: 200px;
+            perspective: 800px;
+        }
+        
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+        
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 10px;
+            display: grid;
+            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+        
+        .dot {
+            background-color: #333;
+            border-radius: 50%;
+        }
+        
+        /* 骰子面定位 */
+        .front  { transform: translateZ(100px); }
+        .back   { transform: rotateY(180deg) translateZ(100px); }
+        .right  { transform: rotateY(90deg) translateZ(100px); }
+        .left   { transform: rotateY(-90deg) translateZ(100px); }
+        .top    { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+        
+        /* 点数布局 */
+        .front .dot:nth-child(1) { grid-area: 2 / 2; }
+		
+		.back .dot:nth-child(1) { grid-area: 1 / 1; }
+        .back .dot:nth-child(2) { grid-area: 1 / 2; }
+        .back .dot:nth-child(3) { grid-area: 1 / 3; }
+        .back .dot:nth-child(4) { grid-area: 3 / 1; }
+        .back .dot:nth-child(5) { grid-area: 3 / 2; }
+        .back .dot:nth-child(6) { grid-area: 3 / 3; }
+        
+        .right .dot:nth-child(1) { grid-area: 1 / 1; }
+        .right .dot:nth-child(2) { grid-area: 2 / 2; }
+        .right .dot:nth-child(3) { grid-area: 3 / 3; }
+        
+        .left .dot:nth-child(1) { grid-area: 1 / 1; }
+        .left .dot:nth-child(2) { grid-area: 1 / 3; }
+        .left .dot:nth-child(3) { grid-area: 3 / 1; }
+        .left .dot:nth-child(4) { grid-area: 3 / 3; }
+        
+        .top .dot:nth-child(1) { grid-area: 1 / 1; }
+        .top .dot:nth-child(2) { grid-area: 1 / 3; }
+        .top .dot:nth-child(3) { grid-area: 2 / 2; }
+        .top .dot:nth-child(4) { grid-area: 3 / 1; }
+        .top .dot:nth-child(5) { grid-area: 3 / 3; }
+        
+        .bottom .dot:nth-child(1) { grid-area: 1 / 1; }
+        .bottom .dot:nth-child(2) { grid-area: 3 / 3; }
+        
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            color: white;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dice">
+            <div class="face front">
+                <div class="dot"></div> <!-- 1点 -->
+            </div>
+            <div class="face bottom">
+                <div class="dot"></div> <!-- 2点 -->
+                <div class="dot"></div>
+            </div>
+            <div class="face right">
+                <div class="dot"></div> <!-- 3点 -->
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="face left">
+                <div class="dot"></div> <!-- 4点 -->
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="face top">
+                <div class="dot"></div> <!-- 5点 -->
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="face back">
+                <div class="dot"></div> <!-- 6点 -->
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="instructions">用鼠标拖动来旋转骰子</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dice = document.querySelector('.dice');
+            let isMouseDown = false;
+            let startX, startY;
+            let rotateX = 0, rotateY = 0;
+            let currentX = 0, currentY = 0;
+            
+            dice.addEventListener('mousedown', (e) => {
+                isMouseDown = true;
+                startX = e.clientX;
+                startY = e.clientY;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isMouseDown = false;
+                // 保存当前旋转角度
+                currentX = rotateX;
+                currentY = rotateY;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isMouseDown) return;
+                
+                e.preventDefault();
+                
+                // 计算鼠标移动距离
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                // 更新旋转角度
+                rotateX = currentX + deltaY;
+                rotateY = currentY + deltaX;
+                
+                // 应用旋转
+                dice.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            // 添加触摸事件支持
+            dice.addEventListener('touchstart', (e) => {
+                isMouseDown = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                e.preventDefault();
+            }, { passive: false });
+            
+            document.addEventListener('touchend', () => {
+                isMouseDown = false;
+                currentX = rotateX;
+                currentY = rotateY;
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isMouseDown) return;
+                
+                const deltaX = e.touches[0].clientX - startX;
+                const deltaY = e.touches[0].clientY - startY;
+                
+                rotateX = currentX + deltaY;
+                rotateY = currentY + deltaX;
+                
+                dice.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                
+                e.preventDefault();
+            }, { passive: false });
+        });
+    </script>
+</body>
+</html>
