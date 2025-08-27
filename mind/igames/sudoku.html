@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四宫格数独</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .instructions {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        
+        .sudoku-container {
+            display: inline-block;
+            margin: 15px 0;
+        }
+        
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 2px;
+            background-color: #34495e;
+            border: 3px solid #2c3e50;
+            border-radius: 5px;
+            padding: 3px;
+        }
+        
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        
+        .cell:nth-child(4n+2), .cell:nth-child(4n+3) {
+            background-color: #ecf0f1;
+        }
+        
+        .cell:hover {
+            background-color: #d6eaf8;
+        }
+        
+        .cell.selected {
+            background-color: #aed6f1;
+        }
+        
+        .cell.fixed {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .cell.error {
+            color: #e74c3c;
+        }
+        
+        .borders-right {
+            border-right: 3px solid #2c3e50;
+        }
+        
+        .borders-bottom {
+            border-bottom: 3px solid #2c3e50;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .new-game {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .check {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .reset {
+            background-color: #e67e22;
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .number-selector {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .number {
+            width: 45px;
+            height: 45px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .number:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+        
+        .message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 30px;
+        }
+        
+        .success {
+            color: #27ae60;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+        }
+        
+        @media (max-width: 500px) {
+            .cell {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .number {
+                width: 40px;
+                height: 40px;
+                font-size: 1.3rem;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>四宫格数独</h1>
+        <p class="instructions">规则：每行、每列和每个2×2宫都需包含数字1-4且不重复</p>
+        
+        <div class="sudoku-container">
+            <div class="sudoku-grid" id="grid"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="new-game" onclick="newGame()">新游戏</button>
+            <button class="check" onclick="checkSolution()">检查答案</button>
+            <button class="reset" onclick="resetGame()">重新开始</button>
+        </div>
+        
+        <div class="number-selector">
+            <div class="number" onclick="selectNumber(1)">1</div>
+            <div class="number" onclick="selectNumber(2)">2</div>
+            <div class="number" onclick="selectNumber(3)">3</div>
+            <div class="number" onclick="selectNumber(4)">4</div>
+            <div class="number" onclick="selectNumber(0)" style="background-color: #e74c3c;">X</div>
+        </div>
+        
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // 游戏状态
+        let selectedCell = null;
+        let grid = [];
+        let solution = [];
+        let initial = [];
+        
+        // 生成一个有效的四宫格数独解决方案
+        function generateSolution() {
+            // 这是一个有效的数独解决方案
+            return [
+                [1, 2, 3, 4],
+                [3, 4, 1, 2],
+                [2, 1, 4, 3],
+                [4, 3, 2, 1]
+            ];
+        }
+        
+        // 基于解决方案创建一个新的游戏
+        function createNewGame() {
+            solution = generateSolution();
+            initial = JSON.parse(JSON.stringify(solution));
+            
+            // 随机移除一些数字创建游戏
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (Math.random() > 0.4) { // 约60%的格子保留数字
+                        initial[i][j] = 0;
+                    }
+                }
+            }
+            
+            grid = JSON.parse(JSON.stringify(initial));
+            renderGrid();
+        }
+        
+        // 渲染数独网格
+        function renderGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    
+                    // 添加边框样式以区分2×2宫
+                    if (j === 1) cell.classList.add('borders-right');
+                    if (i === 1) cell.classList.add('borders-bottom');
+                    
+                    if (grid[i][j] !== 0) {
+                        cell.textContent = grid[i][j];
+                        if (initial[i][j] !== 0) {
+                            cell.classList.add('fixed');
+                        }
+                    }
+                    
+                    cell.addEventListener('click', () => selectCell(i, j));
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+        
+        // 选择单元格
+        function selectCell(row, col) {
+            // 移除之前选择的单元格样式
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => cell.classList.remove('selected'));
+            
+            // 如果不是固定单元格，则选择新单元格
+            if (initial[row][col] === 0) {
+                selectedCell = { row, col };
+                const cellElement = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                cellElement.classList.add('selected');
+            } else {
+                selectedCell = null;
+            }
+            
+            // 清除消息
+            document.getElementById('message').textContent = '';
+            document.getElementById('message').className = 'message';
+        }
+        
+        // 选择数字
+        function selectNumber(number) {
+            if (selectedCell) {
+                const { row, col } = selectedCell;
+                grid[row][col] = number;
+                
+                const cellElement = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                if (number === 0) {
+                    cellElement.textContent = '';
+                    cellElement.classList.remove('error');
+                } else {
+                    cellElement.textContent = number;
+                    
+                    // 检查输入是否正确
+                    if (number !== solution[row][col]) {
+                        cellElement.classList.add('error');
+                    } else {
+                        cellElement.classList.remove('error');
+                    }
+                }
+                
+                // 检查游戏是否完成
+                if (isGameComplete()) {
+                    document.getElementById('message').textContent = '恭喜！你成功解决了这个数独！';
+                    document.getElementById('message').className = 'message success';
+                }
+            }
+        }
+        
+        // 检查游戏是否完成
+        function isGameComplete() {
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (grid[i][j] !== solution[i][j]) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        // 检查解决方案
+        function checkSolution() {
+            let hasErrors = false;
+            const cells = document.querySelectorAll('.cell');
+            
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                
+                if (grid[row][col] !== 0 && grid[row][col] !== solution[row][col]) {
+                    cell.classList.add('error');
+                    hasErrors = true;
+                }
+            });
+            
+            if (hasErrors) {
+                document.getElementById('message').textContent = '有一些数字不正确！';
+                document.getElementById('message').className = 'message error-message';
+            } else if (isGameComplete()) {
+                document.getElementById('message').textContent = '恭喜！你成功解决了这个数独！';
+                document.getElementById('message').className = 'message success';
+            } else {
+                document.getElementById('message').textContent = '目前没有错误，但还没有完成！';
+                document.getElementById('message').className = 'message';
+            }
+        }
+        
+        // 开始新游戏
+        function newGame() {
+            createNewGame();
+            selectedCell = null;
+            document.getElementById('message').textContent = '';
+            document.getElementById('message').className = 'message';
+        }
+        
+        // 重置当前游戏
+        function resetGame() {
+            grid = JSON.parse(JSON.stringify(initial));
+            renderGrid();
+            selectedCell = null;
+            document.getElementById('message').textContent = '游戏已重置';
+            document.getElementById('message').className = 'message';
+        }
+        
+        // 初始化游戏
+        window.onload = function() {
+            createNewGame();
+        };
+    </script>
+</body>
+</html>
