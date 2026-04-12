@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="嘟嘟鸟教学 - 思维训练营。逻辑思维、趣味数理、算法启蒙、益智游戏，激发大脑潜能，锻炼解决问题的能力。">
+    <meta name="theme-color" content="#4f9da6">
+    <title>嘟嘟鸟教学 · 思维训练 | 逻辑 · 数理 · 算法 · 游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+            background: #fefef7;
+            color: #1e2a2e;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.8rem;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+            background: rgba(255, 255, 248, 0.96);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+            gap: 1rem;
+        }
+
+        .logo a {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            text-decoration: none;
+            background: linear-gradient(135deg, #2b7a62, #4f9da6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: opacity 0.2s;
+        }
+
+        .logo a:hover {
+            opacity: 0.85;
+        }
+
+        .logo span {
+            font-size: 1.8rem;
+            display: inline-block;
+            margin-right: 4px;
+            background: none;
+            color: #e0a158;
+            background-clip: unset;
+            -webkit-background-clip: unset;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c4a4e;
+            font-size: 1.05rem;
+            transition: color 0.2s, border-bottom 0.2s;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover,
+        .nav-links .active {
+            color: #2b7a62;
+            border-bottom-color: #4f9da6;
+        }
+
+        /* Hero 区 */
+        .hero {
+            text-align: center;
+            padding: 3rem 0 1.5rem 0;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(145deg, #1e4a4b, #3a7b6e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .thinking-icon {
+            font-size: 2.2rem;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .hero .tagline {
+            font-size: 1.2rem;
+            color: #4a5b5e;
+            max-width: 700px;
+            margin: 0.8rem auto 0;
+            background: #fef9e6;
+            border-radius: 60px;
+            padding: 0.5rem 1.8rem;
+            display: inline-block;
+            font-weight: 450;
+        }
+
+        .intro-thinking {
+            text-align: center;
+            margin: 2rem 0 1.5rem;
+            font-size: 1.05rem;
+            color: #2f5c62;
+            background: #ffffffd9;
+            padding: 1rem 1.5rem;
+            border-radius: 48px;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            border: 1px solid #f0f3e8;
+        }
+
+        /* 思维卡片网格 */
+        .thinking-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0 3rem;
+        }
+
+        .thinking-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.03);
+            border: 1px solid #eef2e8;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .thinking-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 30px -12px rgba(55, 85, 70, 0.15);
+            border-color: #cfdecb;
+        }
+
+        .card-icon {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            background: #f6faf3;
+            width: 4rem;
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2rem;
+            box-shadow: inset 0 0 0 1px #e5efe0, 0 6px 12px -8px rgba(0,0,0,0.1);
+        }
+
+        .thinking-card h3 {
+            font-size: 1.7rem;
+            font-weight: 650;
+            margin: 0.5rem 0 0.75rem;
+            color: #1e3f3f;
+        }
+
+        .topic-list {
+            list-style: none;
+            margin: 1rem 0 1.2rem;
+            flex-grow: 1;
+        }
+
+        .topic-list li {
+            padding: 0.4rem 0;
+            color: #3c6e60;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            border-bottom: 1px dashed #e5ede1;
+        }
+
+        .topic-list li::before {
+            content: "🧩";
+            font-size: 0.75rem;
+            color: #c9b26b;
+        }
+
+        .puzzle-sample {
+            background: #fafbf5;
+            border-radius: 1.2rem;
+            padding: 0.7rem 1rem;
+            margin: 0.8rem 0;
+            font-size: 0.85rem;
+            color: #2c5e54;
+            text-align: center;
+            border-left: 3px solid #9fc7b0;
+        }
+
+        .btn-thinking {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: #f0f4ea;
+            color: #2b7a62;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 550;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            border: 1px solid #dae6d2;
+            width: fit-content;
+            margin-top: 0.8rem;
+            cursor: pointer;
+        }
+
+        .btn-thinking:hover {
+            background: #e6f0e0;
+            color: #1f5f4c;
+            gap: 0.7rem;
+            border-color: #bdd0b2;
+        }
+
+        /* 互动挑战区域 迷你逻辑谜题 */
+        .challenge-box {
+            background: #ffffffea;
+            border-radius: 2rem;
+            padding: 1.6rem;
+            margin: 1.8rem 0 2rem;
+            border: 1px solid #e2ebda;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .challenge-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d6a5c;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .brain-teaser {
+            background: #f9f7ef;
+            padding: 1rem 1.5rem;
+            border-radius: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .brain-teaser p {
+            margin: 0.5rem 0;
+            color: #2c5a4a;
+        }
+
+        .answer-btn {
+            background: #dce9df;
+            border: none;
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: #2b6a5c;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .answer-btn:hover {
+            background: #c7ddc5;
+        }
+
+        .answer-text {
+            margin-top: 0.5rem;
+            display: none;
+            color: #c27e3a;
+            font-size: 0.9rem;
+            border-left: 2px solid #ddcda0;
+            padding-left: 0.8rem;
+        }
+
+        /* 益智游戏占位趣味互动 */
+        .game-preview {
+            background: #f0f7ec;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        /* 趣味区域 */
+        .thinking-quote {
+            background: #fafaf0;
+            border-radius: 2rem;
+            padding: 1.8rem 2rem;
+            margin: 1.5rem 0 2rem;
+            text-align: center;
+            border: 1px solid #e9efdf;
+        }
+
+        .thinking-quote p {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #3a6b60;
+        }
+
+        .thinking-quote span {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #a0824a;
+        }
+
+        /* 学习小贴士 */
+        .tips-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin: 2rem 0 1rem;
+            background: #f9fbf4;
+            border-radius: 1.6rem;
+            padding: 1.5rem;
+            border: 1px solid #e2ebda;
+        }
+
+        .tip-card {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .tip-card h4 {
+            color: #3f786a;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .tip-card p {
+            font-size: 0.9rem;
+            color: #46665e;
+        }
+
+        /* footer */
+        .footer {
+            margin-top: 3rem;
+            background: #eef3e9;
+            padding: 2rem 0 1.5rem;
+            border-radius: 2rem 2rem 0 0;
+            text-align: center;
+            color: #44635c;
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #2c6e60;
+            font-weight: 450;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #d9792b;
+            text-decoration: underline;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #d4e0cf;
+            margin: 1rem 0;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            color: #2c5a51;
+            margin: 0.5rem 0 0.2rem;
+            letter-spacing: -0.2px;
+        }
+
+        .underline-light {
+            width: 70px;
+            height: 3px;
+            background: #caddb5;
+            margin: 0.5rem auto 1rem;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 680px) {
+            .container {
+                padding: 0 1.2rem;
+            }
+            .nav-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .hero h1 {
+                font-size: 2.1rem;
+            }
+            .thinking-card h3 {
+                font-size: 1.5rem;
+            }
+            .hero .tagline {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .thinking-grid {
+                gap: 1.3rem;
+            }
+            .puzzle-sample {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container nav-container">
+        <div class="logo">
+            <a href="../index.html">
+                <span>🐦</span>嘟嘟鸟教学
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="../index.html">首页</a></li>
+            <li><a href="index.html" class="active">思维训练</a></li>
+            <li><a href="../math/index.html">数学</a></li>
+            <li><a href="../physics/index.html">物理</a></li>
+            <li><a href="../computer/index.html">计算机</a></li>
+            <li><a href="../about.html">关于</a></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <div class="hero">
+            <h1>
+                <span class="thinking-icon">🧠</span> 思维训练 · 大脑健身房
+            </h1>
+            <div class="tagline">逻辑 · 数理 · 算法 · 游戏 | 让思考成为习惯</div>
+        </div>
+
+        <div class="intro-thinking">
+            💡 思维决定高度。我们通过<strong>逻辑推理、趣味数理谜题、算法思维启蒙、益智游戏</strong>四大模块，激发你的好奇心与创造力，打破思维定式，提升问题解决能力。
+        </div>
+
+        <div class="section-title">🧩 四大思维训练模块</div>
+        <div class="underline-light"></div>
+
+        <div class="thinking-grid">
+            <!-- 逻辑思维 -->
+            <div class="thinking-card">
+                <div class="card-icon">🔍</div>
+                <h3>逻辑思维</h3>
+                <ul class="topic-list">
+                    <li>演绎推理 · 三段论</li>
+                    <li>归纳与溯因推理</li>
+                    <li>逻辑谬误识别</li>
+                    <li>真值表 · 布尔代数基础</li>
+                    <li>条件推理与悖论欣赏</li>
+                </ul>
+                <div class="puzzle-sample">
+                    🧠 经典谜题：<br>
+                    所有的A都是B，有些B是C，能否推出“有些A是C”？<br>
+                    <span style="font-size:0.75rem; color:#9b7c4a;">(点击下方探索更多)</span>
+                </div>
+                <a href="javascript:void(0)" class="btn-thinking" onclick="alert('📚 逻辑思维系列课程包含大量推理案例与训练，即将上线。')">🔎 锻造逻辑力 →</a>
+            </div>
+
+            <!-- 趣味数理 -->
+            <div class="thinking-card">
+                <div class="card-icon">🎲</div>
+                <h3>趣味数理</h3>
+                <ul class="topic-list">
+                    <li>数字谜题 · 数独变种</li>
+                    <li>数学悖论与趣味几何</li>
+                    <li>概率趣题 · 生日悖论</li>
+                    <li>组合数学游戏 · 鸽巢原理</li>
+                    <li>数学魔术中的思维技巧</li>
+                </ul>
+                <div class="puzzle-sample">
+                    🎯 趣味挑战：<br>
+                    教室里有23人，至少两人同一天生日的概率是多少？<br>
+                    (答案≈50.7% ！)
+                </div>
+                <a href="javascript:void(0)" class="btn-thinking" onclick="alert('📐 趣味数理专题 — 用好奇心解锁数学之美，内容筹备中。')">✨ 玩转数理 →</a>
+            </div>
+
+            <!-- 算法启蒙 -->
+            <div class="thinking-card">
+                <div class="card-icon">⚙️</div>
+                <h3>算法启蒙</h3>
+                <ul class="topic-list">
+                    <li>流程图与计算思维</li>
+                    <li>排序与搜索的小游戏</li>
+                    <li>递归思想 · 汉诺塔</li>
+                    <li>贪心算法初体验</li>
+                    <li>生活中的算法：路线规划</li>
+                </ul>
+                <div class="puzzle-sample">
+                    🔁 递归小例子：<br>
+                    汉诺塔(3) 最少移动步数 = 7<br>
+                    汉诺塔(n) 步数 = 2ⁿ - 1
+                </div>
+                <a href="javascript:void(0)" class="btn-thinking" onclick="alert('🚀 算法启蒙板块即将提供交互式教程，从零开始培养编程思维。')">🧠 计算思维启蒙 →</a>
+            </div>
+
+            <!-- 益智游戏 -->
+            <div class="thinking-card">
+                <div class="card-icon">🎮</div>
+                <h3>益智游戏 · 思维挑战</h3>
+                <ul class="topic-list">
+                    <li>经典谜题：狼羊菜过河</li>
+                    <li>数独 & 数字华容道</li>
+                    <li>逻辑网格谜题 (如战舰谜题)</li>
+                    <li>策略游戏：尼姆游戏</li>
+                    <li>空间想象：立体积木拼搭</li>
+                </ul>
+                <div class="game-preview">
+                    🎲 即将推出互动小游戏：<br> 
+                    “谁是卧底·逻辑版” & 数字解谜闯关
+                </div>
+                <a href="javascript:void(0)" class="btn-thinking" onclick="alert('🎮 益智游戏专区将包含可交互的H5小游戏，锻炼反应与策略，敬请期待。')">🎯 挑战脑力 →</a>
+            </div>
+        </div>
+
+        <!-- 每日一题 趣味互动模块 -->
+        <div class="challenge-box">
+            <div class="challenge-title">
+                <span>🧩 今日思维挑战</span>
+                <span style="font-size:0.8rem; background:#e9efdf; padding:0.2rem 0.8rem; border-radius:20px;">脑力加油站</span>
+            </div>
+            <div class="brain-teaser">
+                <p><strong>🐦 嘟嘟鸟谜题：</strong> 三个逻辑学家走进酒吧，酒保问：“每个人都来杯啤酒吗？” 第一位说：“我不知道。” 第二位说：“我不知道。” 第三位说：“是的，我们都要啤酒。” 请问第三位逻辑学家是如何确定的？</p>
+                <button class="answer-btn" onclick="toggleAnswer(this)">🤔 显示思考提示 / 答案</button>
+                <div class="answer-text">
+                    💡 解析：如果第一位不想喝啤酒，他会直接回答“不”；但他不知道，说明他想喝，但不清楚别人。同理第二位听到第一位说“不知道”，推断第一位想喝，但他自己如果不喝会回答“不”，他也没说“不”，所以他也想喝。第三位听到前两位都说不知道，断定前两位都想喝，并且他自己也想喝，所以替大家回答“是”。 —— 巧妙利用逻辑推理链！
+                </div>
+            </div>
+            <div class="brain-teaser">
+                <p><strong>🎲 数字推理：</strong> 2, 6, 12, 20, ?  下一个数字是什么？</p>
+                <button class="answer-btn" onclick="toggleAnswer(this)">🔍 显示答案</button>
+                <div class="answer-text">
+                    答案：30。规律：n×(n+1) 即 1×2=2, 2×3=6, 3×4=12, 4×5=20, 5×6=30。
+                </div>
+            </div>
+        </div>
+
+        <!-- 思维名言与趣味观点 -->
+        <div class="thinking-quote">
+            <p>“想象力比知识更重要。因为知识是有限的，而想象力概括世界的一切。” —— 爱因斯坦</p>
+            <span>🐧 嘟嘟鸟教学 · 突破思维边界，让创意与逻辑齐飞</span>
+        </div>
+
+        <!-- 思维锻炼小贴士 -->
+        <div class="tips-area">
+            <div class="tip-card">
+                <h4>📖 逻辑思维锻炼法</h4>
+                <p>日常多问“前提是否成立”，玩狼人杀或剧本杀，分析论证结构，尝试写推理笔记。</p>
+            </div>
+            <div class="tip-card">
+                <h4>🔢 数感与趣味数学</h4>
+                <p>每天一道趣味数学题，利用“数学陷阱”或“神奇数字”激发好奇心，把抽象变具象。</p>
+            </div>
+            <div class="tip-card">
+                <h4>🧠 算法思维小习惯</h4>
+                <p>把日常任务拆解为步骤（做菜、整理房间），寻找最优顺序，像程序员一样思考。</p>
+            </div>
+            <div class="tip-card">
+                <h4>🎲 益智游戏推荐</h4>
+                <p>数独、扫雷、国际象棋、谜题书，每天15分钟让大脑保持活跃与灵活。</p>
+            </div>
+        </div>
+
+        <!-- 额外：趣味小游戏占位/互动元素 -->
+        <div style="background: #ffffff; border-radius: 1.6rem; padding: 1.2rem; margin: 1rem 0 2rem; text-align: center; border: 1px solid #e1ecd9;">
+            <p style="color:#2c6e5b; font-weight: 500;">🎲 线上思维实验室 · 即将开放</p>
+            <p style="font-size: 0.9rem;">包含解谜闯关、逻辑对决、数独生成器，让你的大脑时刻在线！</p>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-links">
+            <a href="../index.html">首页</a>
+            <a href="../about.html">关于嘟嘟鸟</a>
+            <a href="index.html">思维训练</a>
+            <a href="../math/index.html">数学</a>
+            <a href="../physics/index.html">物理</a>
+            <a href="../computer/index.html">计算机</a>
+        </div>
+        <hr>
+        <p>© 2026 嘟嘟鸟教学 | 思维升级 · 乐趣学习</p>
+        <p style="font-size: 0.75rem; margin-top: 0.6rem;">🐦 像探险家一样思考 — 嘟嘟鸟教学陪你解锁大脑的无限潜能。</p>
+    </div>
+</footer>
+
+<script>
+    function toggleAnswer(btn) {
+        let answerDiv = btn.nextElementSibling;
+        if (answerDiv.style.display === "none" || !answerDiv.style.display) {
+            answerDiv.style.display = "block";
+            btn.textContent = "🙈 收起答案";
+        } else {
+            answerDiv.style.display = "none";
+            btn.textContent = "🤔 显示思考提示 / 答案";
+            // 针对第二个按钮修正文案
+            if (btn.textContent.includes("显示答案")) {
+                btn.textContent = "🔍 显示答案";
+            } else if (btn.textContent.includes("收起答案") && btn.previousElementSibling?.innerText.includes("数字推理")) {
+                btn.textContent = "🔍 显示答案";
+            } else if (btn.textContent.includes("收起答案") && btn.previousElementSibling?.innerText.includes("嘟嘟鸟谜题")) {
+                btn.textContent = "🤔 显示思考提示 / 答案";
+            }
+        }
+    }
+    // 初始隐藏所有答案块
+    document.querySelectorAll('.answer-text').forEach(el => el.style.display = "none");
+    // 微调第一个按钮初始文本保持一致
+    let btns = document.querySelectorAll('.answer-btn');
+    if(btns[0] && btns[0].innerText.includes("显示思考提示")) btns[0].innerText = "🤔 显示思考提示 / 答案";
+    if(btns[1] && btns[1].innerText.includes("显示答案")) btns[1].innerText = "🔍 显示答案";
+    console.log("嘟嘟鸟教学 · 思维训练营 | 逻辑/数理/算法/游戏");
+</script>
+</body>
+</html>

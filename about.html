@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="关于嘟嘟鸟教学 - 我们的使命、教学理念与团队故事。简约高效，陪伴成长。">
+    <meta name="theme-color" content="#4f9da6">
+    <title>嘟嘟鸟教学 · 关于我们 | 理念 · 故事 · 陪伴</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+            background: #fefef7;
+            color: #1e2a2e;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.8rem;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(2px);
+            background: rgba(255, 255, 248, 0.96);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+            gap: 1rem;
+        }
+
+        .logo a {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            text-decoration: none;
+            background: linear-gradient(135deg, #2b7a62, #4f9da6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: opacity 0.2s;
+        }
+
+        .logo a:hover {
+            opacity: 0.85;
+        }
+
+        .logo span {
+            font-size: 1.8rem;
+            display: inline-block;
+            margin-right: 4px;
+            background: none;
+            color: #e0a158;
+            background-clip: unset;
+            -webkit-background-clip: unset;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c4a4e;
+            font-size: 1.05rem;
+            transition: color 0.2s, border-bottom 0.2s;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover,
+        .nav-links .active {
+            color: #2b7a62;
+            border-bottom-color: #4f9da6;
+        }
+
+        /* Hero 区 */
+        .hero {
+            text-align: center;
+            padding: 3rem 0 1.5rem 0;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(145deg, #1e4a4b, #3a7b6e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .about-icon {
+            font-size: 2.2rem;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .hero .tagline {
+            font-size: 1.2rem;
+            color: #4a5b5e;
+            max-width: 700px;
+            margin: 0.8rem auto 0;
+            background: #fef9e6;
+            border-radius: 60px;
+            padding: 0.5rem 1.8rem;
+            display: inline-block;
+            font-weight: 450;
+        }
+
+        /* 内容区块 */
+        .mission-section {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            border: 1px solid #eef2e8;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c5a51;
+            margin-bottom: 1rem;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        .about-text {
+            font-size: 1.05rem;
+            color: #2d4e48;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.8rem;
+            margin: 2rem 0;
+        }
+
+        .value-card {
+            background: #fafaf0;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: 0.2s;
+            border: 1px solid #e9efdf;
+        }
+
+        .value-card:hover {
+            transform: translateY(-4px);
+            background: #fef9e6;
+        }
+
+        .value-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .value-card h3 {
+            font-size: 1.3rem;
+            color: #2b7a62;
+            margin-bottom: 0.5rem;
+        }
+
+        .value-card p {
+            font-size: 0.9rem;
+            color: #4c6a63;
+        }
+
+        .story-block {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .story-text {
+            flex: 2;
+        }
+
+        .story-quote {
+            flex: 1;
+            background: #eef3e9;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            font-style: italic;
+            color: #3a6b60;
+            border-left: 4px solid #caddb5;
+        }
+
+        .team-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .team-member {
+            text-align: center;
+            width: 180px;
+        }
+
+        .avatar {
+            background: #d9e6da;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.8rem;
+            font-size: 3rem;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        .team-member h4 {
+            font-size: 1.1rem;
+            color: #2b7a62;
+        }
+
+        .team-member p {
+            font-size: 0.8rem;
+            color: #5f8077;
+        }
+
+        .contact-info {
+            background: #f9fbf4;
+            border-radius: 1.6rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 2rem 0;
+            border: 1px solid #e2ebda;
+        }
+
+        .contact-info a {
+            color: #2b7a62;
+            text-decoration: none;
+            border-bottom: 1px dashed #bdd0b2;
+        }
+
+        .footer {
+            margin-top: 3rem;
+            background: #eef3e9;
+            padding: 2rem 0 1.5rem;
+            border-radius: 2rem 2rem 0 0;
+            text-align: center;
+            color: #44635c;
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #2c6e60;
+            font-weight: 450;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #d9792b;
+            text-decoration: underline;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #d4e0cf;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 680px) {
+            .container {
+                padding: 0 1.2rem;
+            }
+            .nav-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .hero h1 {
+                font-size: 2.1rem;
+            }
+            .section-title {
+                font-size: 1.5rem;
+            }
+            .story-block {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container nav-container">
+        <div class="logo">
+            <a href="index.html">
+                <span>🐦</span>嘟嘟鸟教学
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="thinking/index.html">思维训练</a></li>
+            <li><a href="math/index.html">数学</a></li>
+            <li><a href="physics/index.html">物理</a></li>
+            <li><a href="computer/index.html">计算机</a></li>
+            <li><a href="about.html" class="active">关于</a></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <div class="hero">
+            <h1>
+                <span class="about-icon">📖</span> 关于嘟嘟鸟
+            </h1>
+            <div class="tagline">让学习像呼吸一样自然 · 陪伴你探索知识的森林</div>
+        </div>
+
+        <!-- 使命与故事 -->
+        <div class="mission-section">
+            <div class="section-title">
+                <span>🎯</span> 我们的使命
+            </div>
+            <div class="about-text">
+                <strong>嘟嘟鸟教学</strong> 诞生于一个简单的愿望：打破传统教育的枯燥与割裂，为每一个热爱知识的人提供<strong>简约、系统、有温度</strong>的学习伙伴。我们相信，教育不应是填鸭式的灌输，而是一场点燃好奇心的旅程。无论你是中小学生、大学生，还是终身学习者，这里都有适合你的思维养料。
+            </div>
+            <div class="about-text">
+                网站名称中的“嘟嘟鸟”象征着独特、专注与探索精神——虽然这种鸟已经消失于历史，但我们希望借其名，提醒自己珍视每一次求知的独特旅程，也寓意知识穿越时空，永不灭绝。目前我们深耕四大领域：<strong>思维训练、数学、物理、计算机</strong>，未来将拓展更多交叉学科。
+            </div>
+        </div>
+
+        <!-- 价值观 -->
+        <div class="mission-section">
+            <div class="section-title">
+                <span>✨</span> 我们的教学理念
+            </div>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-emoji">🧠</div>
+                    <h3>思维先行</h3>
+                    <p>不仅传授知识点，更注重逻辑、批判性思维与创造力，培养可迁移的底层能力。</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-emoji">🌱</div>
+                    <h3>简约高效</h3>
+                    <p>拒绝冗余，每个概念都经过精炼，用最直观的方式呈现核心思想，节省你的时间。</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-emoji">🤝</div>
+                    <h3>陪伴成长</h3>
+                    <p>从基础到高阶，设置清晰的路径，并提供挑战与反思，做你随时可回访的学习港湾。</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-emoji">🌍</div>
+                    <h3>学科互联</h3>
+                    <p>数学是物理的语言，计算机是逻辑的载体，思维训练贯通一切。拒绝知识孤岛。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 故事与创始人 -->
+        <div class="mission-section">
+            <div class="section-title">
+                <span>📜</span> 嘟嘟鸟的故事
+            </div>
+            <div class="story-block">
+                <div class="story-text">
+                    <div class="about-text">
+                        2025年，几位来自数学、物理、计算机和教育领域的伙伴，因为对“填鸭式教学”的厌倦而走到一起。他们发现许多在线资源要么过于碎片化，要么过于学术化，缺少一座连接“兴趣”与“深度”的桥梁。于是，嘟嘟鸟教学项目启动。
+                    </div>
+                    <div class="about-text">
+                        我们从零开始，亲手设计每一门课程的结构，打磨每一段解释，加入恰到好处的幽默与挑战。今天，网站虽尚在成长初期，但“简约而不简单”的内核已经形成。未来，我们将逐步推出互动练习、思维工具与社区讨论，让学习更有生命力。
+                    </div>
+                </div>
+                <div class="story-quote">
+                    “教育的本质不是注满一桶水，而是点燃一团火。”<br>
+                    —— 威廉·巴特勒·叶芝<br>
+                    <span style="font-size:0.8rem; display:block; margin-top:0.5rem;">这也是嘟嘟鸟始终坚守的信条。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 联系方式与未来 -->
+        <div class="contact-info">
+            <p>📧 联系我们：<a href="mailto:hello@duduniao.com">hello@duduniao.com</a> &nbsp;|&nbsp; 
+            🐦 社交媒体：<a href="#">@嘟嘟鸟教学</a> (筹备中)</p>
+            <p style="margin-top: 0.8rem;">📍 目前网站持续迭代中，内容逐步丰富。如果你有任何建议或合作想法，欢迎来信～</p>
+            <p style="margin-top: 1rem; font-size: 0.85rem;">✨ 未来计划：互动练习、思维挑战赛、开源学习路线图 ✨</p>
+        </div>
+
+        <!-- 回到首页推荐 -->
+        <div style="text-align: center; margin: 1rem 0 2rem;">
+            <a href="index.html" class="btn-thinking" style="display: inline-flex; align-items: center; gap: 0.5rem; background:#f0f4ea; color:#2b7a62; padding:0.6rem 1.5rem; border-radius:40px; text-decoration:none; font-weight:550;">🏠 返回首页探索学科 →</a>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-links">
+            <a href="index.html">首页</a>
+            <a href="about.html">关于嘟嘟鸟</a>
+            <a href="thinking/index.html">思维训练</a>
+            <a href="math/index.html">数学</a>
+            <a href="physics/index.html">物理</a>
+            <a href="computer/index.html">计算机</a>
+        </div>
+        <hr>
+        <p>© 2026 嘟嘟鸟教学 | 简约 · 陪伴 · 深度思考</p>
+        <p style="font-size: 0.75rem; margin-top: 0.6rem;">🐦 每一只嘟嘟鸟，都是知识的探索者。</p>
+    </div>
+</footer>
+
+<style>
+    .btn-thinking {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: #f0f4ea;
+        color: #2b7a62;
+        padding: 0.6rem 1.2rem;
+        border-radius: 40px;
+        text-decoration: none;
+        font-weight: 550;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        border: 1px solid #dae6d2;
+        width: fit-content;
+        cursor: pointer;
+    }
+    .btn-thinking:hover {
+        background: #e6f0e0;
+        color: #1f5f4c;
+        gap: 0.7rem;
+        border-color: #bdd0b2;
+    }
+</style>
+
+</body>
+</html>
