@@ -2,391 +2,685 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>嘟嘟鸟智能拼图</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="智能拼图游戏 - 经典滑块拼图，挑战你的空间思维。可解性校验，步数统计，支持4x4难度。嘟嘟鸟教学思维训练系列。">
+    <title>智能拼图 · 滑块挑战 | 嘟嘟鸟教学</title>
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            padding: 20px;
-        }
-        
-        .container {
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-        }
-        
-        h1 {
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            font-size: 2.5rem;
-        }
-        
-        .subtitle {
-            margin-bottom: 30px;
-            font-style: italic;
-            opacity: 0.9;
-        }
-        
-        .puzzle-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 6px;
-            background-color: rgba(255, 255, 255, 0.15);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            margin: 0 auto;
-            width: 320px;
-            height: 320px;
-            position: relative;
-        }
-        
-        .tile {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            font-weight: bold;
-            background-color: #fff;
-            color: #444;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
             user-select: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
-        .tile:hover {
-            transform: scale(1.03);
-            background-color: #f8f8f8;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .empty {
-            background-color: transparent !important;
-            box-shadow: none !important;
-            cursor: default;
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-        }
-        
-        .empty:hover {
-            transform: none !important;
-            background-color: transparent !important;
-            box-shadow: none !important;
-        }
-        
-        .game-info {
-            margin-top: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .moves {
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-        
-        .message {
-            font-size: 1.3rem;
-            font-weight: bold;
-            min-height: 40px;
-            color: #ffeb3b;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-            margin: 10px 0;
-        }
-        
-        .controls {
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+            background: #f5f7f2;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+            align-items: center;
         }
-        
-        button {
-            padding: 12px 25px;
-            font-size: 1rem;
-            font-weight: 600;
+
+        /* 游戏主卡片 */
+        .game-container {
+            max-width: 650px;
+            width: 100%;
+            background: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 1.2rem 2rem;
+            transition: all 0.2s ease;
+            border: 1px solid #e9efdf;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .game-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2b7a62, #4f9da6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0 0 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub {
+            color: #5c7f72;
+            font-size: 0.85rem;
+            background: #f0f4ea;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+
+        /* 信息栏 */
+        .info-panel {
+            background: #fefcf0;
+            border-radius: 2rem;
+            padding: 0.7rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid #e2ebda;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1.2rem;
+            background: white;
+            padding: 0.2rem 1rem;
+            border-radius: 3rem;
+            align-items: baseline;
+        }
+
+        .stats span:first-child {
+            color: #4c6a63;
+            font-size: 0.85rem;
+        }
+
+        .stats .value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2b7a62;
+            line-height: 1;
+            margin-left: 6px;
+        }
+
+        .reset-btn {
+            background: #e6ede2;
             border: none;
-            border-radius: 50px;
-            background-color: #fff;
-            color: #6a11cb;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2b7a62;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
         }
-        
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-            background-color: #f0f0f0;
+
+        .reset-btn:hover {
+            background: #d9e4d0;
+            transform: scale(0.97);
         }
-        
-        button:active {
-            transform: translateY(1px);
+
+        /* 难度切换 */
+        .difficulty {
+            display: flex;
+            gap: 8px;
+            background: #f3f6ef;
+            padding: 0.2rem 0.6rem;
+            border-radius: 2rem;
         }
-        
-        .instructions {
-            margin-top: 30px;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            max-width: 500px;
+
+        .difficulty-btn {
+            background: transparent;
+            border: none;
+            padding: 0.3rem 0.9rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #5c7f72;
+            cursor: pointer;
+            transition: 0.1s;
         }
-        
-        @media (max-width: 500px) {
-            .puzzle-container {
-                width: 280px;
-                height: 280px;
+
+        .difficulty-btn.active {
+            background: #2b7a62;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        /* 拼图网格 */
+        .puzzle-board {
+            display: grid;
+            background-color: #d9e2ce;
+            border-radius: 1.8rem;
+            padding: 12px;
+            gap: 8px;
+            box-shadow: inset 0 0 0 2px #fef9e6, 0 6px 12px rgba(0,0,0,0.05);
+            margin-bottom: 1rem;
+        }
+
+        .tile {
+            background: #fffdf5;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: #2b5a4f;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            aspect-ratio: 1 / 1;
+        }
+
+        .tile.empty {
+            background: #e9eedf;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 1px #cbdcc0;
+            color: #b9cdac;
+        }
+
+        .tile:active {
+            transform: scale(0.96);
+        }
+
+        /* 胜利遮罩/消息 */
+        .win-message {
+            text-align: center;
+            margin-top: 0.8rem;
+            background: #e2f0e2;
+            border-radius: 3rem;
+            padding: 0.5rem;
+            font-weight: 500;
+            color: #2b7a62;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .game-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8aa79f;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f0f4ea;
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            color: #2b7a62;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            background: #e3ecd9;
+        }
+
+        /* 提示 */
+        .key-hint {
+            font-size: 0.7rem;
+            background: #e9eedf;
+            border-radius: 1rem;
+            padding: 2px 10px;
+            color: #547a6b;
+        }
+
+        @media (max-width: 550px) {
+            .game-container {
+                padding: 1rem;
             }
-            
-            h1 {
-                font-size: 2rem;
+            .tile {
+                font-size: 1.2rem;
+            }
+            .stats .value {
+                font-size: 1.2rem;
+            }
+            .puzzle-board {
+                gap: 5px;
+                padding: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>智能拼图</h1>
-        
-        <div class="puzzle-container" id="puzzle">
-            <!-- 拼图方块将通过JavaScript动态生成 -->
-        </div>
-        
-        <div class="game-info">
-            <div class="moves">移动步数: <span id="move-count">0</span></div>
-            <div class="message" id="message">点击方块移动它们</div>
-        </div>
-        
-        <div class="controls">
-            <button id="shuffle-btn">重新打乱</button>
-            <button id="reset-btn">重新开始</button>
-        </div>
-        
-        <div class="instructions">
-            <p><strong>游戏说明：</strong>点击与虚线空白区域相邻的数字方块，使其移动到空白位置。目标是将数字按1-8顺序排列。</p>
-        </div>
+<div class="game-container">
+    <div class="game-header">
+        <h1>
+            <span>🧩</span> 智能拼图
+        </h1>
+        <div class="sub">滑动拼图 · 挑战逻辑与空间</div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const puzzleContainer = document.getElementById('puzzle');
-            const moveCountElement = document.getElementById('move-count');
-            const messageElement = document.getElementById('message');
-            const shuffleButton = document.getElementById('shuffle-btn');
-            const resetButton = document.getElementById('reset-btn');
-            
-            let moveCount = 0;
-            let tiles = [];
-            let emptyIndex = 8; // 初始空白块位置（索引从0开始）
-            
-            // 初始化拼图
-            function initializePuzzle() {
-                puzzleContainer.innerHTML = '';
-                tiles = [];
-                moveCount = 0;
-                moveCountElement.textContent = moveCount;
-                messageElement.textContent = '点击方块移动它们';
-                messageElement.style.color = '#ffeb3b';
-                
-                // 创建8个数字方块和1个空白方块
-                for (let i = 0; i < 8; i++) {
-                    const tile = document.createElement('div');
-                    tile.className = 'tile';
-                    tile.textContent = i + 1;
-                    tile.dataset.index = i;
-                    
-                    tile.addEventListener('click', () => {
-                        moveTile(parseInt(tile.dataset.index));
-                    });
-                    
-                    tiles.push(tile);
-                    puzzleContainer.appendChild(tile);
-                }
-                
-                // 添加空白方块（隐藏）
-                const emptyTile = document.createElement('div');
-                emptyTile.className = 'tile empty';
-                emptyTile.dataset.index = 8;
-                tiles.push(emptyTile);
-                puzzleContainer.appendChild(emptyTile);
-                
-                // 初始为已解决状态
-                updatePositions();
+    <div class="info-panel">
+        <div class="stats">
+            <span>📦 步数</span>
+            <span class="value" id="stepCount">0</span>
+        </div>
+        <div class="difficulty" id="difficultyGroup">
+            <button data-size="3" class="difficulty-btn">3x3</button>
+            <button data-size="4" class="difficulty-btn active">4x4</button>
+        </div>
+        <button class="reset-btn" id="resetGameBtn">🔄 新的一局</button>
+        <div class="key-hint">点击相邻块移动</div>
+    </div>
+
+    <!-- 动态拼图网格容器 -->
+    <div id="puzzleGrid" class="puzzle-board"></div>
+
+    <div id="winMessage" class="win-message" style="display: none;"></div>
+
+    <div class="game-footer">
+        <a href="index.html" class="back-link" onclick="history.back()">🎮 返回游戏列表</a>
+        <span style="margin:0 6px">·</span>
+        <span>智能校验 · 确保有解</span>
+    </div>
+</div>
+
+<script>
+    // ======================= 智能拼图核心 =======================
+    // 支持 3x3 和 4x4 难度，打乱算法保证有解（通过模拟移动或逆序数校验）
+    // 使用一维数组存储拼图状态，0 代表空白块
+    let currentSize = 4;        // 默认 4x4
+    let tiles = [];             // 一维数组，值 1..(size*size-1) 和 0(空白)
+    let emptyIndex = 15;        // 空白所在索引 (0-index)
+    let stepCount = 0;
+    let gameWon = false;
+    
+    // DOM 元素
+    const puzzleGrid = document.getElementById('puzzleGrid');
+    const stepCountSpan = document.getElementById('stepCount');
+    const resetBtn = document.getElementById('resetGameBtn');
+    const winMessageDiv = document.getElementById('winMessage');
+    
+    // 难度按钮
+    const diffBtns = document.querySelectorAll('.difficulty-btn');
+    
+    // 辅助函数：根据当前size获取总格数
+    function getTotalTiles() {
+        return currentSize * currentSize;
+    }
+    
+    // 目标状态数组 (1..total-1, 最后是0)
+    function getGoalState() {
+        const total = getTotalTiles();
+        const goal = [];
+        for (let i = 1; i < total; i++) {
+            goal.push(i);
+        }
+        goal.push(0);
+        return goal;
+    }
+    
+    // 检查胜利条件
+    function checkVictory() {
+        const goal = getGoalState();
+        for (let i = 0; i < tiles.length; i++) {
+            if (tiles[i] !== goal[i]) return false;
+        }
+        return true;
+    }
+    
+    // 更新UI: 步数、胜利信息、网格渲染
+    function updateUI() {
+        stepCountSpan.innerText = stepCount;
+        if (gameWon) {
+            winMessageDiv.style.display = 'block';
+            winMessageDiv.innerHTML = '🎉 恭喜完成！ 太棒啦 🎉 <span style="font-size:0.85rem;">✨ 智能拼图通关 ✨</span>';
+        } else {
+            winMessageDiv.style.display = 'none';
+        }
+        renderGrid();
+    }
+    
+    // 渲染拼图网格
+    function renderGrid() {
+        const total = getTotalTiles();
+        puzzleGrid.style.gridTemplateColumns = `repeat(${currentSize}, 1fr)`;
+        puzzleGrid.innerHTML = '';
+        for (let i = 0; i < total; i++) {
+            const tileValue = tiles[i];
+            const tileDiv = document.createElement('div');
+            tileDiv.classList.add('tile');
+            if (tileValue === 0) {
+                tileDiv.classList.add('empty');
+                tileDiv.textContent = '';   // 空白块无数字
+                // 可以添加一个图标，但保持简约
+            } else {
+                tileDiv.textContent = tileValue;
             }
-            
-            // 更新方块位置
-            function updatePositions() {
-                for (let i = 0; i < tiles.length; i++) {
-                    const row = Math.floor(i / 3);
-                    const col = i % 3;
-                    
-                    tiles[i].style.gridRow = row + 1;
-                    tiles[i].style.gridColumn = col + 1;
-                }
+            // 添加点击事件，若可移动则交换
+            tileDiv.addEventListener('click', (function(idx) {
+                return function() { tryMoveTile(idx); };
+            })(i));
+            puzzleGrid.appendChild(tileDiv);
+        }
+    }
+    
+    // 核心移动: 尝试将点击的瓷砖与空白交换 (若相邻)
+    function tryMoveTile(clickedIndex) {
+        if (gameWon) {
+            // 游戏胜利后不能移动，重置后可继续
+            return;
+        }
+        // 检查是否与空白相邻 (上下左右)
+        const emptyRow = Math.floor(emptyIndex / currentSize);
+        const emptyCol = emptyIndex % currentSize;
+        const clickRow = Math.floor(clickedIndex / currentSize);
+        const clickCol = clickedIndex % currentSize;
+        
+        const isAdjacent = (Math.abs(emptyRow - clickRow) + Math.abs(emptyCol - clickCol)) === 1;
+        if (!isAdjacent) return;
+        
+        // 执行交换
+        [tiles[emptyIndex], tiles[clickedIndex]] = [tiles[clickedIndex], tiles[emptyIndex]];
+        emptyIndex = clickedIndex;
+        stepCount++;
+        
+        // 检查是否胜利
+        const win = checkVictory();
+        if (win) {
+            gameWon = true;
+            updateUI();
+        } else {
+            updateUI();
+        }
+    }
+    
+    // ---------- 打乱算法 (保证有解) ----------
+    // 方法: 从目标状态开始，随机执行N次合法移动 (模拟滑动)
+    // 这样生成的局面必然有解，并且步数重置为0
+    function shuffleFromGoal(moves = 250) {
+        // 重置为目标状态
+        const goal = getGoalState();
+        tiles = [...goal];
+        // 找到空白索引
+        emptyIndex = tiles.indexOf(0);
+        
+        // 随机移动多次
+        let lastMoveDirection = null; // 避免来回移动导致无效，但没关系
+        for (let i = 0; i < moves; i++) {
+            const neighbors = getValidNeighborIndices(emptyIndex);
+            if (neighbors.length === 0) continue;
+            // 随机选择一个邻居交换
+            const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+            // 交换空白和邻居
+            [tiles[emptyIndex], tiles[randomNeighbor]] = [tiles[randomNeighbor], tiles[emptyIndex]];
+            emptyIndex = randomNeighbor;
+        }
+        // 确保游戏未胜利且步数为0
+        gameWon = false;
+        stepCount = 0;
+        updateUI();
+    }
+    
+    // 获取某个索引的相邻可移动索引 (上下左右)
+    function getValidNeighborIndices(idx) {
+        const row = Math.floor(idx / currentSize);
+        const col = idx % currentSize;
+        const neighbors = [];
+        // 上
+        if (row > 0) neighbors.push(idx - currentSize);
+        // 下
+        if (row < currentSize - 1) neighbors.push(idx + currentSize);
+        // 左
+        if (col > 0) neighbors.push(idx - 1);
+        // 右
+        if (col < currentSize - 1) neighbors.push(idx + 1);
+        return neighbors;
+    }
+    
+    // 另一种重置方式: 重新打乱 (智能可解)
+    function resetGame() {
+        shuffleFromGoal(300);  // 足够乱序
+    }
+    
+    // 切换难度 (3x3 / 4x4)
+    function setDifficulty(size) {
+        if (size === currentSize) return;
+        currentSize = size;
+        // 重置 tiles 数组长度
+        const total = getTotalTiles();
+        // 生成新目标状态并打乱
+        const goal = [];
+        for (let i = 1; i < total; i++) goal.push(i);
+        goal.push(0);
+        tiles = [...goal];
+        emptyIndex = tiles.indexOf(0);
+        // 打乱新棋盘
+        shuffleFromGoal(280);
+        // 更新按钮高亮
+        diffBtns.forEach(btn => {
+            const btnSize = parseInt(btn.getAttribute('data-size'), 10);
+            if (btnSize === size) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
             }
-            
-            // 移动方块
-            function moveTile(tileIndex) {
-                // 检查是否与空白块相邻
-                const row = Math.floor(tileIndex / 3);
-                const col = tileIndex % 3;
-                const emptyRow = Math.floor(emptyIndex / 3);
-                const emptyCol = emptyIndex % 3;
-                
-                // 判断是否相邻（同一行且列相邻，或同一列且行相邻）
-                const isAdjacent = 
-                    (row === emptyRow && Math.abs(col - emptyCol) === 1) ||
-                    (col === emptyCol && Math.abs(row - emptyRow) === 1);
-                
-                if (isAdjacent) {
-                    // 交换方块和空白块的位置
-                    [tiles[tileIndex], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[tileIndex]];
-                    
-                    // 修复bug：更新方块的dataset.index属性
-                    tiles[tileIndex].dataset.index = tileIndex;
-                    tiles[emptyIndex].dataset.index = emptyIndex;
-                    
-                    // 更新空白索引
-                    emptyIndex = tileIndex;
-                    
-                    updatePositions();
-                    
-                    // 更新移动次数
-                    moveCount++;
-                    moveCountElement.textContent = moveCount;
-                    
-                    // 检查是否解决
-                    if (isSolved()) {
-                        messageElement.textContent = '恭喜！你成功完成了拼图！';
-                        messageElement.style.color = '#4caf50';
-                        
-                        // 添加胜利动画
-                        tiles.forEach(tile => {
-                            if (tile.textContent !== '') {
-                                tile.style.backgroundColor = '#c8e6c9';
-                                tile.style.transform = 'scale(1.05)';
-                                tile.style.boxShadow = '0 0 20px rgba(76, 175, 80, 0.7)';
-                            }
-                        });
-                    }
-                }
+        });
+        gameWon = false;
+        stepCount = 0;
+        updateUI();
+    }
+    
+    // 额外添加“智能提示”模块：当玩家卡住时可高亮可移动块（轻轻闪烁），提高用户体验
+    // 这里实现一个简单帮助: 点击“智能提示”高亮可移动的瓷砖? 为了简约，在棋盘下方增加一个提示按钮，或自动高亮可移动区域（使用CSS动画）
+    // 增强: 在info-panel增加一个灯泡按钮，点击后短暂高亮所有与空白相邻的瓷砖，不破坏玩法。
+    function addSmartHint() {
+        // 如果已有提示按钮，不再重复添加；否则创建
+        if (document.getElementById('smartHintBtn')) return;
+        const hintBtn = document.createElement('button');
+        hintBtn.id = 'smartHintBtn';
+        hintBtn.className = 'reset-btn';
+        hintBtn.style.background = '#e2e9da';
+        hintBtn.innerHTML = '💡 智能提示';
+        hintBtn.style.marginLeft = 'auto';
+        const infoPanel = document.querySelector('.info-panel');
+        infoPanel.appendChild(hintBtn);
+        
+        hintBtn.addEventListener('click', () => {
+            if (gameWon) {
+                alert('游戏已胜利，重置后继续挑战吧~');
+                return;
             }
-            
-            // 检查是否已解决
-            function isSolved() {
-                for (let i = 0; i < tiles.length - 1; i++) {
-                    if (parseInt(tiles[i].textContent) !== i + 1) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            
-            // 打乱拼图（确保可解）
-            function shufflePuzzle() {
-                messageElement.textContent = '尝试将数字按顺序排列！';
-                messageElement.style.color = '#ffeb3b';
-                moveCount = 0;
-                moveCountElement.textContent = moveCount;
-                
-                // 移除胜利样式
-                tiles.forEach(tile => {
-                    if (tile.textContent !== '') {
-                        tile.style.backgroundColor = '#fff';
-                        tile.style.transform = 'scale(1)';
-                        tile.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
-                    }
-                });
-                
-                // 执行随机移动100次来打乱拼图
-                let tempEmptyIndex = emptyIndex;
-                
-                for (let i = 0; i < 100; i++) {
-                    // 获取可以移动的相邻方块
-                    const possibleMoves = [];
-                    const emptyRow = Math.floor(tempEmptyIndex / 3);
-                    const emptyCol = tempEmptyIndex % 3;
-                    
-                    // 检查上方的方块
-                    if (emptyRow > 0) possibleMoves.push(tempEmptyIndex - 3);
-                    // 检查下方的方块
-                    if (emptyRow < 2) possibleMoves.push(tempEmptyIndex + 3);
-                    // 检查左侧的方块
-                    if (emptyCol > 0) possibleMoves.push(tempEmptyIndex - 1);
-                    // 检查右侧的方块
-                    if (emptyCol < 2) possibleMoves.push(tempEmptyIndex + 1);
-                    
-                    // 随机选择一个可移动的方块
-                    const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-                    
-                    // 交换方块
-                    [tiles[randomMove], tiles[tempEmptyIndex]] = [tiles[tempEmptyIndex], tiles[randomMove]];
-                    
-                    // 修复bug：更新方块的dataset.index属性
-                    tiles[randomMove].dataset.index = randomMove;
-                    tiles[tempEmptyIndex].dataset.index = tempEmptyIndex;
-                    
-                    tempEmptyIndex = randomMove;
-                }
-                
-                emptyIndex = tempEmptyIndex;
-                updatePositions();
-            }
-            
-            // 事件监听
-            shuffleButton.addEventListener('click', shufflePuzzle);
-            resetButton.addEventListener('click', initializePuzzle);
-            
-            // 初始化游戏
-            initializePuzzle();
-            
-            // 添加键盘控制
-            document.addEventListener('keydown', (e) => {
-                if (isSolved()) return;
-                
-                let moveDirection = -1;
-                const emptyRow = Math.floor(emptyIndex / 3);
-                const emptyCol = emptyIndex % 3;
-                
-                switch(e.key) {
-                    case 'ArrowUp':
-                        if (emptyRow < 2) moveDirection = emptyIndex + 3;
-                        break;
-                    case 'ArrowDown':
-                        if (emptyRow > 0) moveDirection = emptyIndex - 3;
-                        break;
-                    case 'ArrowLeft':
-                        if (emptyCol < 2) moveDirection = emptyIndex + 1;
-                        break;
-                    case 'ArrowRight':
-                        if (emptyCol > 0) moveDirection = emptyIndex - 1;
-                        break;
-                }
-                
-                if (moveDirection !== -1) {
-                    moveTile(moveDirection);
+            // 获取所有与空白相邻的格子索引，高亮边框闪烁3秒
+            const neighbors = getValidNeighborIndices(emptyIndex);
+            if (neighbors.length === 0) return;
+            const tilesDom = document.querySelectorAll('.tile');
+            neighbors.forEach(idx => {
+                const el = tilesDom[idx];
+                if (el) {
+                    el.style.transition = '0.1s';
+                    el.style.boxShadow = '0 0 0 3px #f5bc70, 0 0 0 5px #ffd966';
+                    setTimeout(() => {
+                        if (el) el.style.boxShadow = '';
+                    }, 800);
                 }
             });
         });
-    </script>
+    }
+    
+    // 键盘支持 (方向键移动空白周围的块, 增强交互)
+    function handleKeyboard(e) {
+        if (gameWon) return;
+        const key = e.key;
+        let targetIdx = null;
+        const row = Math.floor(emptyIndex / currentSize);
+        const col = emptyIndex % currentSize;
+        // 注意: 按下方向键时，实际上是移动空白旁边的块到空白位置，感觉是滑动拼图。逻辑：比如按上，则空白下方的块上移。
+        // 为了直觉: 按上键 => 空白下方块与空白交换 (空白向上移动)
+        if (key === 'ArrowUp' && row < currentSize - 1) {
+            targetIdx = emptyIndex + currentSize;
+        } else if (key === 'ArrowDown' && row > 0) {
+            targetIdx = emptyIndex - currentSize;
+        } else if (key === 'ArrowLeft' && col < currentSize - 1) {
+            targetIdx = emptyIndex + 1;
+        } else if (key === 'ArrowRight' && col > 0) {
+            targetIdx = emptyIndex - 1;
+        }
+        if (targetIdx !== null && targetIdx >= 0 && targetIdx < getTotalTiles()) {
+            e.preventDefault();
+            tryMoveTile(targetIdx);
+        }
+    }
+    
+    // 初始化事件与UI
+    function init() {
+        // 默认 4x4 打乱
+        setDifficulty(4);
+        // 难度切换监听
+        diffBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const newSize = parseInt(btn.getAttribute('data-size'), 10);
+                if (!isNaN(newSize) && newSize !== currentSize) {
+                    setDifficulty(newSize);
+                }
+            });
+        });
+        resetBtn.addEventListener('click', () => {
+            resetGame();
+        });
+        window.addEventListener('keydown', handleKeyboard);
+        addSmartHint();     // 添加智能提示按钮
+    }
+    
+    // 为确保打乱时UI更新正确，重写一下updateUI的额外处理
+    // 开始运行
+    init();
+    
+    // 补丁: 确保每次重置后 gameWon 为 false, 并且胜利后无法移动。已在 shuffleFromGoal 中设置 gameWon false
+    // 修复当切换难度时，步数重置/胜利重置
+    // 添加一些额外校验, 移动时若胜利则禁止移动上面已经处理.
+    
+    // 增加关于有解性的说明: 因为打乱算法完全从目标状态通过合法滑动生成，100%有解，无需逆序数校验。
+    // 另外为了更专业，在控制台输出确保智能拼图特性。
+    console.log('智能拼图已启动 — 滑动滑块，所有谜题均可解！');
+    
+    // 可选：增加移动步数最佳成绩本地存储（轻量级彩蛋）
+    let bestScore = localStorage.getItem('puzzleBestScore_'+currentSize);
+    function updateBestScore() {
+        if (!gameWon) return;
+        const key = `puzzleBestScore_${currentSize}`;
+        let best = localStorage.getItem(key);
+        if (best === null || stepCount < parseInt(best,10)) {
+            localStorage.setItem(key, stepCount);
+            // 显示祝贺消息中包含最佳记录
+            winMessageDiv.innerHTML = `🎉 恭喜完成！ 步数: ${stepCount} 🎉<br>🏆 新纪录！ (${currentSize}x${currentSize}) 🏆`;
+        } else {
+            winMessageDiv.innerHTML = `🎉 完成！ 步数: ${stepCount} 🎉<br>📋 最佳记录: ${best} 步`;
+        }
+    }
+    // 改写 checkVictory 调用后更新最佳记录
+    const originalCheckVictory = checkVictory;
+    window.checkVictory = function() {
+        const isWin = originalCheckVictory();
+        if (isWin && !gameWon) {
+            gameWon = true;
+            updateBestScore();
+            updateUI();
+        }
+        return isWin;
+    };
+    // 重新绑定 checkVictory 确保胜利时触发最佳记录更新
+    // 但原函数 checkVictory 已存在，我们需要覆盖胜利判定后的表现
+    // 在 tryMoveTile 中胜利后调用 updateUI 并触发最佳记录，但为了优雅，在 tryMoveTile 胜利时调用更新记录。
+    // 直接重写 tryMoveTile 的胜利部分:
+    const originalTryMove = tryMoveTile;
+    window.tryMoveTile = function(clickedIndex) {
+        if (gameWon) return;
+        const emptyRow = Math.floor(emptyIndex / currentSize);
+        const emptyCol = emptyIndex % currentSize;
+        const clickRow = Math.floor(clickedIndex / currentSize);
+        const clickCol = clickedIndex % currentSize;
+        const isAdjacent = (Math.abs(emptyRow - clickRow) + Math.abs(emptyCol - clickCol)) === 1;
+        if (!isAdjacent) return;
+        [tiles[emptyIndex], tiles[clickedIndex]] = [tiles[clickedIndex], tiles[emptyIndex]];
+        emptyIndex = clickedIndex;
+        stepCount++;
+        const win = checkVictory();
+        if (win) {
+            gameWon = true;
+            // 更新最佳记录
+            const key = `puzzleBestScore_${currentSize}`;
+            let best = localStorage.getItem(key);
+            if (best === null || stepCount < parseInt(best,10)) {
+                localStorage.setItem(key, stepCount);
+                winMessageDiv.innerHTML = `🎉 恭喜完成！ 步数: ${stepCount} 🎉<br>🏆 新纪录！ (${currentSize}x${currentSize}) 🏆`;
+            } else {
+                winMessageDiv.innerHTML = `🎉 完成！ 步数: ${stepCount} 🎉<br>📋 最佳记录: ${best} 步`;
+            }
+            updateUI();
+        } else {
+            updateUI();
+        }
+    };
+    // 替换函数引用
+    window.tryMoveTile = tryMoveTile;
+    // 重新绑定原有的重置和打乱中使用的 tryMoveTile 避免冲突, 已使用新函数覆盖。
+    // 但是 reset 中用到 shuffleFromGoal，其内部移动不改变外部步数，不影响。
+    // 为了确保全局作用域正确更新，直接覆盖原函数。
+    // 同时注意setDifficulty中也会调用shuffleFromGoal，已重置gameWon等
+    // 修复: 将新函数赋给全局变量，并在内部调用正确的引用
+    // 将函数提升并确保核心方法正确
+    // 注意重复声明会导致初始 init 时调用 tryMoveTile 变成新函数，完美。
+    // 重新调整作用域，完成
+    // 初始化后绑定键盘移动
+    // 为了防止重复绑定，在init里已经绑定键盘
+    // 额外修正 victory 之后重置时步数显示正确
+    // 同步updateUI中的最佳纪录
+    // 最后确保重置时清除胜利信息以及记录展示
+    const originalReset = resetGame;
+    window.resetGame = function() {
+        gameWon = false;
+        stepCount = 0;
+        shuffleFromGoal(300);
+        winMessageDiv.style.display = 'none';
+        updateUI();
+    };
+    resetGame = window.resetGame;
+    resetBtn.onclick = () => resetGame();
+    // 难度切换时也重新绑定重置记录显示
+    const originalSetDifficulty = setDifficulty;
+    window.setDifficulty = function(size) {
+        if (size === currentSize) return;
+        currentSize = size;
+        const total = getTotalTiles();
+        const goal = [];
+        for (let i = 1; i < total; i++) goal.push(i);
+        goal.push(0);
+        tiles = [...goal];
+        emptyIndex = tiles.indexOf(0);
+        shuffleFromGoal(280);
+        diffBtns.forEach(btn => {
+            const btnSize = parseInt(btn.getAttribute('data-size'), 10);
+            if (btnSize === size) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        gameWon = false;
+        stepCount = 0;
+        winMessageDiv.style.display = 'none';
+        updateUI();
+    };
+    setDifficulty = window.setDifficulty;
+    // 重新绑定难度按钮事件
+    diffBtns.forEach(btn => {
+        btn.removeEventListener('click', () => {});
+        btn.addEventListener('click', (e) => {
+            const newSize = parseInt(btn.getAttribute('data-size'), 10);
+            if (!isNaN(newSize) && newSize !== currentSize) {
+                setDifficulty(newSize);
+            }
+        });
+    });
+    // 刷新当前显示
+    updateUI();
+    // 为每个难度独立的最佳记录，已实现
+</script>
 </body>
 </html>

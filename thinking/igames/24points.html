@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="24点游戏 - 随机四张牌（1~10），使用加减乘除和括号组合成24。锻炼心算与数学思维。嘟嘟鸟教学思维训练系列。">
+    <title>24点 · 经典心算 | 嘟嘟鸟教学</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+            background: #f5f7f2;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            max-width: 650px;
+            width: 100%;
+            background: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 1.2rem 2rem;
+            transition: all 0.2s ease;
+            border: 1px solid #e9efdf;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .game-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2b7a62, #4f9da6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0 0 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub {
+            color: #5c7f72;
+            font-size: 0.85rem;
+            background: #f0f4ea;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+
+        /* 数字卡片 */
+        .cards-area {
+            background: #fefcf0;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 1px solid #e2ebda;
+        }
+
+        .card-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .card {
+            background: #fffdf5;
+            width: 85px;
+            height: 100px;
+            border-radius: 1.2rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #2b5a4f;
+            border: 1px solid #d9e2ce;
+            transition: 0.1s;
+        }
+
+        @media (max-width: 500px) {
+            .card {
+                width: 65px;
+                height: 80px;
+                font-size: 2rem;
+            }
+        }
+
+        /* 信息栏 */
+        .info-panel {
+            background: #fefcf0;
+            border-radius: 2rem;
+            padding: 0.7rem 1.2rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid #e2ebda;
+        }
+
+        .score-box {
+            background: white;
+            padding: 0.2rem 1rem;
+            border-radius: 3rem;
+            font-weight: 500;
+            color: #2b7a62;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #e6ede2;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #2b7a62;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background: #d9e4d0;
+            transform: scale(0.97);
+        }
+
+        /* 表达式输入区 */
+        .expression-area {
+            margin: 1rem 0;
+        }
+
+        .expr-input {
+            width: 100%;
+            padding: 12px 18px;
+            font-size: 1.1rem;
+            font-family: 'Courier New', 'SF Mono', monospace;
+            border: 1px solid #d4e0cf;
+            border-radius: 3rem;
+            background: white;
+            outline: none;
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .expr-input:focus {
+            border-color: #9fc7b0;
+            box-shadow: 0 0 0 3px #e2eeda;
+        }
+
+        .hint-area {
+            margin-top: 1rem;
+            background: #f9fbf4;
+            border-radius: 1.5rem;
+            padding: 0.7rem 1rem;
+            font-size: 0.85rem;
+            color: #5c7f72;
+            text-align: center;
+            border-left: 3px solid #caddb5;
+        }
+
+        .message {
+            margin-top: 0.8rem;
+            text-align: center;
+            font-weight: 500;
+            padding: 0.4rem;
+            border-radius: 2rem;
+            background: #faf5e6;
+            color: #b87c4a;
+        }
+
+        .game-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8aa79f;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f0f4ea;
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            color: #2b7a62;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            background: #e3ecd9;
+        }
+
+        .success {
+            color: #2b7a62;
+            background: #e2f0e2;
+        }
+        .error {
+            color: #c05a3b;
+            background: #ffe8e0;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <h1>
+            <span>🃏</span> 24点 · 心算挑战
+        </h1>
+        <div class="sub">用 ＋ － × ÷ 和括号，组合成24（数字1~10）</div>
+    </div>
+
+    <div class="cards-area">
+        <div class="card-row" id="cardContainer">
+            <!-- 动态生成四个数字卡片 -->
+        </div>
+        <div style="font-size: 0.75rem; margin-top: 10px;">🎯 每个数字必须恰好用一次</div>
+    </div>
+
+    <div class="info-panel">
+        <div class="score-box" id="scoreDisplay">🏆 得分: 0</div>
+        <div class="action-group">
+            <button id="newGameBtn">🎲 新的一题</button>
+            <button id="hintBtn">💡 提示</button>
+        </div>
+    </div>
+
+    <div class="expression-area">
+        <input type="text" id="expressionInput" class="expr-input" placeholder="输入算式，例如: (8-4)×(7-1)" autocomplete="off">
+        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 12px;">
+            <button id="checkBtn">✓ 验证答案</button>
+            <button id="clearBtn">🗑️ 清空</button>
+        </div>
+    </div>
+
+    <div id="messageBox" class="message">✨ 输入算式，点击验证，每个数字用一次 ✨</div>
+
+    <div class="hint-area" id="hintBox">
+        💡 点击「提示」获取一个解法思路（如果存在）
+    </div>
+
+    <div class="game-footer">
+        <a href="javascript:void(0)" class="back-link" onclick="history.back()">🎮 返回游戏列表</a>
+        <span style="margin:0 6px">·</span>
+        <span>支持 + - * / 和括号，数字顺序可调</span>
+    </div>
+</div>
+
+<script>
+    // ---------- 24点游戏核心逻辑 (数字范围1~10，不含JQK) ----------
+    let currentNumbers = [];    // 当前四个数字 (1~10)
+    let currentSolution = null; // 存储一个有效解法的字符串表达式
+    let score = 0;
+    let usedHintForCurrent = false;   // 本题是否用过提示（扣分标志）
+    let currentSolved = false;        // 本题是否已经答对得分（锁定，防止重复加分）
+    
+    // DOM 元素
+    const cardContainer = document.getElementById('cardContainer');
+    const expressionInput = document.getElementById('expressionInput');
+    const messageBox = document.getElementById('messageBox');
+    const hintBox = document.getElementById('hintBox');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const newGameBtn = document.getElementById('newGameBtn');
+    const hintBtn = document.getElementById('hintBtn');
+    const checkBtn = document.getElementById('checkBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    
+    // ---------- 工具函数 ----------
+    function updateScoreUI() {
+        scoreDisplay.innerText = `🏆 得分: ${score}`;
+    }
+    
+    // 显示普通消息
+    function showMessage(msg, isError = false) {
+        messageBox.innerText = msg;
+        messageBox.classList.remove('success', 'error');
+        if (isError) {
+            messageBox.classList.add('error');
+        } else {
+            messageBox.classList.add('success');
+        }
+        // 3秒后恢复默认提示（但不清空重要消息，仅当未改变时）
+        setTimeout(() => {
+            if (messageBox.innerText === msg) {
+                messageBox.classList.remove('success', 'error');
+                messageBox.innerText = '✨ 继续挑战，输入算式 ✨';
+            }
+        }, 2000);
+    }
+    
+    // 随机生成 1~10 的四个数字 (可重复)
+    function generateRandomNumbers() {
+        const nums = [];
+        for (let i = 0; i < 4; i++) {
+            nums.push(Math.floor(Math.random() * 10) + 1); // 1-10
+        }
+        return nums;
+    }
+    
+    // 渲染数字卡片（直接显示数字，不转为字母）
+    function renderCards() {
+        cardContainer.innerHTML = '';
+        currentNumbers.forEach(num => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.textContent = num.toString();
+            cardContainer.appendChild(card);
+        });
+    }
+    
+    // ---------- 24点求解器 (穷举所有可能组合，返回一个解法字符串) ----------
+    function solve24(nums) {
+        const eps = 1e-6;
+        
+        function dfs(numsList, exprList) {
+            if (numsList.length === 1) {
+                if (Math.abs(numsList[0] - 24) < eps) {
+                    return exprList[0];
+                }
+                return null;
+            }
+            const n = numsList.length;
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    const a = numsList[i];
+                    const b = numsList[j];
+                    const exprA = exprList[i];
+                    const exprB = exprList[j];
+                    
+                    const newNums = [];
+                    const newExprs = [];
+                    for (let k = 0; k < n; k++) {
+                        if (k !== i && k !== j) {
+                            newNums.push(numsList[k]);
+                            newExprs.push(exprList[k]);
+                        }
+                    }
+                    
+                    const operations = [
+                        { op: '+', func: (x, y) => x + y, needOrder: false },
+                        { op: '*', func: (x, y) => x * y, needOrder: false },
+                        { op: '-', func: (x, y) => x - y, needOrder: true },
+                        { op: '/', func: (x, y) => x / y, needOrder: true }
+                    ];
+                    
+                    for (let op of operations) {
+                        const orders = op.needOrder ? [[a, b, `${exprA}${op.op}${exprB}`], [b, a, `${exprB}${op.op}${exprA}`]] : [[a, b, `(${exprA}${op.op}${exprB})`]];
+                        for (let [val1, val2, expr] of orders) {
+                            if (op.op === '/' && Math.abs(val2) < eps) continue;
+                            let res;
+                            try {
+                                if (op.op === '+') res = val1 + val2;
+                                else if (op.op === '-') res = val1 - val2;
+                                else if (op.op === '*') res = val1 * val2;
+                                else res = val1 / val2;
+                            } catch(e) { continue; }
+                            
+                            const newNumsCopy = [...newNums, res];
+                            const newExprsCopy = [...newExprs, expr];
+                            const result = dfs(newNumsCopy, newExprsCopy);
+                            if (result !== null) return result;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        
+        const initNums = [...nums];
+        const initExprs = nums.map(n => n.toString());
+        const solution = dfs(initNums, initExprs);
+        return solution;
+    }
+    
+    // 检查用户表达式是否合法并使用给定的四个数字恰好一次
+    function evaluateUserExpression(expr, numbers) {
+        let cleanExpr = expr.replace(/\s/g, '');
+        if (cleanExpr === "") {
+            return { valid: false, error: "表达式不能为空" };
+        }
+        
+        const allowedRegex = /^[0-9+\-*/()]+$/;
+        if (!allowedRegex.test(cleanExpr)) {
+            return { valid: false, error: "表达式只能包含数字、运算符 + - * / 和括号" };
+        }
+        
+        const tokens = cleanExpr.match(/\d+|[+\-*/()]/g);
+        if (!tokens) {
+            return { valid: false, error: "无效表达式" };
+        }
+        const usedNumbers = [];
+        for (let token of tokens) {
+            if (/^\d+$/.test(token)) {
+                usedNumbers.push(parseInt(token, 10));
+            }
+        }
+        
+        if (usedNumbers.length !== 4) {
+            return { valid: false, error: `必须恰好使用4个数字，当前使用了 ${usedNumbers.length} 个` };
+        }
+        
+        const sortedUsed = [...usedNumbers].sort((a,b)=>a-b);
+        const sortedTarget = [...numbers].sort((a,b)=>a-b);
+        for (let i = 0; i < sortedUsed.length; i++) {
+            if (sortedUsed[i] !== sortedTarget[i]) {
+                return { valid: false, error: `使用的数字与题目不符，题目为 ${numbers.join(', ')}` };
+            }
+        }
+        
+        let result;
+        try {
+            const calc = new Function('return (' + cleanExpr + ')');
+            result = calc();
+        } catch (e) {
+            return { valid: false, error: `表达式语法错误: ${e.message}` };
+        }
+        
+        if (typeof result !== 'number' || isNaN(result) || !isFinite(result)) {
+            return { valid: false, error: "计算结果无效" };
+        }
+        
+        const eps = 1e-6;
+        if (Math.abs(result - 24) < eps) {
+            return { valid: true, result: result, error: null };
+        } else {
+            return { valid: false, error: `计算结果为 ${result.toFixed(4)}，不等于24` };
+        }
+    }
+    
+    // 开始新题目 (可选择是否重置得分，默认保留得分)
+    function newGame(resetScore = false) {
+        if (resetScore) {
+            score = 0;
+            updateScoreUI();
+        }
+        // 生成随机数 (1~10)
+        currentNumbers = generateRandomNumbers();
+        // 求解当前数字的24点解法
+        currentSolution = solve24(currentNumbers);
+        // 重置状态
+        usedHintForCurrent = false;
+        currentSolved = false;
+        // 渲染卡片
+        renderCards();
+        // 清空输入框和消息
+        expressionInput.value = '';
+        showMessage(`🎲 新题目：${currentNumbers.join(', ')}  用它们算出24`, false);
+        // 更新提示区域文字
+        if (currentSolution) {
+            hintBox.innerHTML = '💡 点击「提示」获取一个解法 (如果存在)';
+        } else {
+            hintBox.innerHTML = '😵 本题暂时无解！点击「新的一题」重新挑战吧～';
+        }
+        messageBox.classList.remove('success', 'error');
+    }
+    
+    // 验证答案
+    function checkAnswer() {
+        // 如果本题已经答对得分，阻止再次加分
+        if (currentSolved) {
+            showMessage("🎉 本题已完成！请点击「新的一题」继续挑战吧 🎉", false);
+            return;
+        }
+        
+        const expr = expressionInput.value.trim();
+        if (expr === "") {
+            showMessage("请输入算式", true);
+            return;
+        }
+        const result = evaluateUserExpression(expr, currentNumbers);
+        if (result.valid) {
+            // 正确得分，标记本题已解决
+            score += 10;
+            updateScoreUI();
+            currentSolved = true;
+            showMessage(`✅ 恭喜回答正确！ +10分！ (${expr} = 24)`, false);
+            
+            // 弹出询问是否进入下一题
+            const next = confirm("🎉 恭喜回答正确！\n是否进入下一题？");
+            if (next) {
+                // 进入下一题，保留当前得分，重置题目
+                newGame(false);
+            } else {
+                // 留在当前题目，但 currentSolved 为 true，不允许再提交得分
+                // 同时提示用户可以继续查看或点击新游戏
+                showMessage("✨ 已锁定本题，点击「新的一题」继续挑战", false);
+            }
+        } else {
+            showMessage(`❌ ${result.error}`, true);
+        }
+    }
+    
+    // 提示功能 (扣分规则不变，但提示不影响已经锁定的题目)
+    function giveHint() {
+        if (currentSolution) {
+            let hintExpr = currentSolution;
+            hintBox.innerHTML = `✨ 一个有效解法： ${hintExpr} = 24 ✨<br><span style="font-size:0.75rem;">试试看，数字顺序可以调整~</span>`;
+            if (!usedHintForCurrent && !currentSolved) {
+                usedHintForCurrent = true;
+                let deduction = Math.min(score, 10);
+                score = Math.max(0, score - deduction);
+                updateScoreUI();
+                if (deduction > 0) {
+                    showMessage(`💡 使用提示 -${deduction}分`, false);
+                } else {
+                    showMessage(`💡 当前0分，提示不扣分`, false);
+                }
+            } else if (currentSolved) {
+                showMessage(`💡 本题已完成，但解法供参考`, false);
+            } else {
+                showMessage(`💡 已经提示过本题了，再试一次吧`, false);
+            }
+        } else {
+            hintBox.innerHTML = '😭 当前题目无解！建议点击「新的一题」换一题。';
+            showMessage("当前题目无有效24点解法，换一题吧", true);
+        }
+    }
+    
+    // 清空输入框
+    function clearInput() {
+        expressionInput.value = '';
+        showMessage("输入已清空，重新输入算式吧", false);
+    }
+    
+    // ---------- 事件绑定 ----------
+    newGameBtn.addEventListener('click', () => {
+        newGame(false);
+    });
+    hintBtn.addEventListener('click', giveHint);
+    checkBtn.addEventListener('click', checkAnswer);
+    clearBtn.addEventListener('click', clearInput);
+    
+    // 支持回车键验证
+    expressionInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            checkAnswer();
+        }
+    });
+    
+    // ---------- 初始化第一局，确保有解（避免第一题无解扫兴）----------
+    function init() {
+        let attempts = 0;
+        while (attempts < 15) {
+            const testNums = generateRandomNumbers();
+            const sol = solve24(testNums);
+            if (sol) {
+                currentNumbers = testNums;
+                currentSolution = sol;
+                break;
+            }
+            attempts++;
+        }
+        if (!currentSolution) {
+            // 保底给一个经典有解题目 3,3,8,8 (但8也在1-10内)
+            currentNumbers = [3, 3, 8, 8];
+            currentSolution = solve24(currentNumbers);
+        }
+        renderCards();
+        usedHintForCurrent = false;
+        currentSolved = false;
+        score = 0;
+        updateScoreUI();
+        expressionInput.value = '';
+        showMessage(`🎯 题目: ${currentNumbers.join(', ')} 用四则运算算出24`, false);
+        if (currentSolution) {
+            hintBox.innerHTML = '💡 点击「提示」获取一个解法';
+        } else {
+            hintBox.innerHTML = '⚠️ 本题无解？点击新的一题';
+        }
+    }
+    
+    init();
+</script>
+</body>
+</html>

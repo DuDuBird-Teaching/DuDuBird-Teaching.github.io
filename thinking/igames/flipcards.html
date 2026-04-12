@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="记忆翻牌游戏 - 考验记忆力，匹配所有卡片。嘟嘟鸟教学思维训练系列。">
+    <title>记忆翻牌 · 脑力配对 | 嘟嘟鸟教学</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+            background: #f5f7f2;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            max-width: 650px;
+            width: 100%;
+            background: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 1.2rem 2rem;
+            transition: all 0.2s ease;
+            border: 1px solid #e9efdf;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .game-header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2b7a62, #4f9da6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0 0 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub {
+            color: #5c7f72;
+            font-size: 0.85rem;
+            background: #f0f4ea;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+
+        /* 信息栏 */
+        .info-panel {
+            background: #fefcf0;
+            border-radius: 2rem;
+            padding: 0.7rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid #e2ebda;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1.2rem;
+            background: white;
+            padding: 0.2rem 1rem;
+            border-radius: 3rem;
+            align-items: baseline;
+        }
+
+        .stats span:first-child {
+            color: #4c6a63;
+            font-size: 0.85rem;
+        }
+
+        .stats .value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2b7a62;
+            line-height: 1;
+            margin-left: 6px;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            background: #e6ede2;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #2b7a62;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background: #d9e4d0;
+            transform: scale(0.97);
+        }
+
+        /* 卡片网格 */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 1rem 0;
+        }
+
+        .card {
+            aspect-ratio: 1 / 1;
+            background: #fffdf5;
+            border-radius: 1.2rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 2.4rem;
+            font-weight: 500;
+            border: 1px solid #e2ebda;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .card:active {
+            transform: scale(0.96);
+        }
+
+        /* 卡片正面和背面的简单翻转效果（使用内容切换） */
+        .card.matched {
+            background: #e2f0e2;
+            cursor: default;
+            box-shadow: inset 0 0 0 2px #caddb5;
+        }
+
+        .card.flipped {
+            background: #fef9e6;
+            border-color: #caddb5;
+        }
+
+        .card.matched:active {
+            transform: none;
+        }
+
+        /* 胜利消息 */
+        .win-message {
+            text-align: center;
+            margin-top: 0.8rem;
+            background: #e2f0e2;
+            border-radius: 3rem;
+            padding: 0.5rem;
+            font-weight: 500;
+            color: #2b7a62;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .game-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8aa79f;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f0f4ea;
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            color: #2b7a62;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            background: #e3ecd9;
+        }
+
+        @media (max-width: 550px) {
+            .board {
+                gap: 8px;
+            }
+            .card {
+                font-size: 1.6rem;
+            }
+            .stats .value {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <h1>
+            <span>🧠</span> 记忆翻牌
+        </h1>
+        <div class="sub">匹配相同图案 · 挑战记忆力</div>
+    </div>
+
+    <div class="info-panel">
+        <div class="stats">
+            <span>📊 步数</span>
+            <span class="value" id="moveCounter">0</span>
+        </div>
+        <div class="action-group">
+            <button id="resetGameBtn">🔄 重来一局</button>
+        </div>
+    </div>
+
+    <div class="board" id="gameBoard"></div>
+
+    <div id="winMessage" class="win-message" style="display: none;"></div>
+
+    <div class="game-footer">
+        <a href="javascript:void(0)" class="back-link" onclick="history.back()">🎮 返回游戏列表</a>
+        <span style="margin:0 6px">·</span>
+        <span>点击卡片配对，用时步数越少越厉害</span>
+    </div>
+</div>
+
+<script>
+    // ---------- 记忆翻牌游戏核心 ----------
+    // 8对卡片，使用 Emoji 图案 (可爱且无需图片)
+    const CARD_VALUES = [
+        '🐶', '🐱', '🐭', '🐹',  // 狗、猫、老鼠、仓鼠
+        '🐰', '🦊', '🐻', '🐼'   // 兔子、狐狸、熊、熊猫
+    ];
+    
+    let cards = [];          // 存储卡片对象 { value, matched, flipped, id }
+    let moveCount = 0;
+    let lockBoard = false;   // 等待动画或比较时禁止点击
+    let firstCard = null;
+    let secondCard = null;
+    let timeoutId = null;
+    let gameFinished = false;
+    
+    // DOM 元素
+    const boardEl = document.getElementById('gameBoard');
+    const moveCounterSpan = document.getElementById('moveCounter');
+    const winMessageDiv = document.getElementById('winMessage');
+    const resetBtn = document.getElementById('resetGameBtn');
+    
+    // 辅助：更新步数UI
+    function updateMoveUI() {
+        moveCounterSpan.innerText = moveCount;
+    }
+    
+    // 洗牌算法 (Fisher-Yates)
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+    
+    // 初始化卡片数据
+    function initCardData() {
+        // 每个值出现两次，构成8对
+        let deck = [...CARD_VALUES, ...CARD_VALUES];
+        deck = shuffleArray(deck);
+        cards = deck.map((value, index) => ({
+            id: index,
+            value: value,
+            matched: false,
+            flipped: false
+        }));
+    }
+    
+    // 渲染网格
+    function renderBoard() {
+        boardEl.innerHTML = '';
+        for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
+            const cardDiv = document.createElement('div');
+            cardDiv.classList.add('card');
+            if (card.matched) {
+                cardDiv.classList.add('matched');
+                cardDiv.textContent = card.value;
+            } else if (card.flipped) {
+                cardDiv.classList.add('flipped');
+                cardDiv.textContent = card.value;
+            } else {
+                cardDiv.textContent = '?';
+            }
+            cardDiv.addEventListener('click', (function(idx) {
+                return function() { onCardClick(idx); };
+            })(i));
+            boardEl.appendChild(cardDiv);
+        }
+    }
+    
+    // 重置翻牌状态（不清除配对，仅用于比较失败后翻转回去）
+    function resetFlipState() {
+        if (firstCard) {
+            cards[firstCard].flipped = false;
+            firstCard = null;
+        }
+        if (secondCard) {
+            cards[secondCard].flipped = false;
+            secondCard = null;
+        }
+        lockBoard = false;
+        renderBoard();
+    }
+    
+    // 检查胜利
+    function checkVictory() {
+        const allMatched = cards.every(card => card.matched === true);
+        if (allMatched && !gameFinished) {
+            gameFinished = true;
+            winMessageDiv.style.display = 'block';
+            winMessageDiv.innerHTML = `🎉 恭喜通关！ 步数: ${moveCount} 🎉<br>✨ 记忆力超群 ✨`;
+        } else {
+            if (!allMatched) {
+                winMessageDiv.style.display = 'none';
+            }
+        }
+    }
+    
+    // 处理两张卡片匹配成功
+    function handleMatch() {
+        cards[firstCard].matched = true;
+        cards[secondCard].matched = true;
+        // 清除临时翻转标记
+        cards[firstCard].flipped = false;
+        cards[secondCard].flipped = false;
+        firstCard = null;
+        secondCard = null;
+        lockBoard = false;
+        renderBoard();
+        checkVictory();
+    }
+    
+    // 处理匹配失败
+    function handleMismatch() {
+        // 延迟后翻转回去
+        timeoutId = setTimeout(() => {
+            // 再次确认卡片还未被匹配 (可能在延迟中被重置)
+            if (firstCard !== null && secondCard !== null) {
+                if (!cards[firstCard].matched && !cards[secondCard].matched) {
+                    cards[firstCard].flipped = false;
+                    cards[secondCard].flipped = false;
+                }
+                firstCard = null;
+                secondCard = null;
+            }
+            lockBoard = false;
+            renderBoard();
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = null;
+        }, 700);
+    }
+    
+    // 核心点击逻辑
+    function onCardClick(clickedIdx) {
+        // 游戏胜利后不能点击
+        if (gameFinished) return;
+        // 锁板 或 正在等待动画时不能点击
+        if (lockBoard) return;
+        
+        const clickedCard = cards[clickedIdx];
+        // 已匹配的卡片不可点击 / 已经翻开且等待配对的卡片不可重复点击同一张
+        if (clickedCard.matched) return;
+        if (clickedCard.flipped) return;
+        
+        // 如果当前没有选中的第一张卡
+        if (firstCard === null) {
+            // 翻开当前卡片
+            clickedCard.flipped = true;
+            firstCard = clickedIdx;
+            renderBoard();
+            return;
+        }
+        
+        // 已经有第一张，且点击的不是同一张
+        if (firstCard !== null && secondCard === null && firstCard !== clickedIdx) {
+            // 翻开第二张
+            clickedCard.flipped = true;
+            secondCard = clickedIdx;
+            renderBoard();
+            
+            // 增加步数 (每成功配对一次或失败一次都算一步，即一对尝试)
+            moveCount++;
+            updateMoveUI();
+            
+            // 检查是否匹配
+            const firstVal = cards[firstCard].value;
+            const secondVal = cards[secondCard].value;
+            if (firstVal === secondVal) {
+                // 匹配成功，不需要延迟，直接处理
+                // 清除任何待处理的计时器避免干扰
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+                handleMatch();
+            } else {
+                // 匹配失败，锁定面板，延迟后翻转
+                lockBoard = true;
+                handleMismatch();
+            }
+        }
+    }
+    
+    // 重置游戏 (完全洗牌，重置所有状态)
+    function resetGame() {
+        // 清除任何未完成的计时器
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+        // 重置全局状态
+        lockBoard = false;
+        firstCard = null;
+        secondCard = null;
+        gameFinished = false;
+        moveCount = 0;
+        updateMoveUI();
+        winMessageDiv.style.display = 'none';
+        // 重新初始化卡片
+        initCardData();
+        renderBoard();
+    }
+    
+    // 新游戏 (等同于重置)
+    function newGame() {
+        resetGame();
+    }
+    
+    // 事件绑定
+    resetBtn.addEventListener('click', () => {
+        newGame();
+    });
+    
+    // 初始化
+    function init() {
+        initCardData();
+        renderBoard();
+        moveCount = 0;
+        updateMoveUI();
+        gameFinished = false;
+        winMessageDiv.style.display = 'none';
+        lockBoard = false;
+        firstCard = null;
+        secondCard = null;
+    }
+    
+    init();
+</script>
+</body>
+</html>
