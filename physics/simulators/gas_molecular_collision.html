@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>气体分子碰撞模拟 | 精确边界碰撞 | 动量守恒</title>
+    <style>
+        * {
+            user-select: none;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #1a3c2c 0%, #0e2a1f 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Roboto', 'Fira Code', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+        .sim-container {
+            background: #1e2a2a;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 1.2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            background-color: #0a1f1a;
+            cursor: pointer;
+        }
+        .controls {
+            margin-top: 1.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            align-items: center;
+            background: #2d3e3b;
+            padding: 0.8rem 1.5rem;
+            border-radius: 3rem;
+            backdrop-filter: blur(2px);
+        }
+        button {
+            background: #ffd966;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 0.4rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            color: #2d2b1f;
+        }
+        button:hover {
+            background: #ffe08c;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .reset-btn {
+            background: #70c8b0;
+            color: #1e3a2f;
+        }
+        .clear-btn {
+            background: #e07a5f;
+            color: white;
+        }
+        .info-panel {
+            background: #1f2f2b;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #d9e3c6;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            gap: 1rem;
+            letter-spacing: 0.5px;
+        }
+        .info-panel span {
+            color: #ffeaac;
+            font-weight: bold;
+        }
+        input {
+            width: 70px;
+            background: #0f2a24;
+            border: 1px solid #6a9c89;
+            color: #f0f3e8;
+            border-radius: 20px;
+            padding: 5px 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        label {
+            font-size: 0.85rem;
+            margin-left: 5px;
+            color: #cfe6cf;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #253b36;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+        @media (max-width: 680px) {
+            .controls { gap: 0.6rem; }
+            .info-panel { font-size: 0.7rem; gap: 0.6rem; }
+            button { font-size: 0.8rem; padding: 0.3rem 0.8rem; }
+        }
+        footer {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.7rem;
+            color: #b2d4c0;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="sim-container">
+        <canvas id="gasCanvas" width="900" height="550" style="width:100%; height:auto; max-width:900px; aspect-ratio:900/550"></canvas>
+        <div class="controls">
+            <button id="playPauseBtn">⏸️ 暂停</button>
+            <button id="resetBtn" class="reset-btn">🔄 重置</button>
+            <button id="addBtn" class="reset-btn">➕ 加分子</button>
+            <button id="removeBtn" class="clear-btn">➖ 减分子</button>
+            <div class="slider-container">
+                <span style="font-size:0.8rem;">⚡ 初速因子</span>
+                <input type="range" id="speedFactor" min="0.3" max="2.0" step="0.01" value="1.0" style="width:100px;">
+                <span id="speedVal" style="min-width: 35px;">1.00</span>
+            </div>
+            <div class="info-panel">
+                <div>分子数: <span id="moleculeCount">0</span></div>
+                <div>总动量 X: <span id="totalPx">0.00</span></div>
+                <div>总动量 Y: <span id="totalPy">0.00</span></div>
+            </div>
+        </div>
+        <footer>⚡ 弹性碰撞 | 精确边界碰撞 (时间反演) | 动量守恒 & 动能守恒</footer>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // -------- 物理参数 ----------
+        const canvas = document.getElementById('gasCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const W = 900, H = 550;
+        canvas.width = W;
+        canvas.height = H;
+        
+        let molecules = [];
+        const BASE_RADIUS = 7;
+        const MASS = 1.0;
+        
+        let baseSpeedFactor = 1.0;
+        let isRunning = true;
+        let animationId = null;
+        
+        // 分子间碰撞迭代次数
+        const COLLISION_ITER = 3;
+        
+        // ---- 辅助函数 ----
+        function randomRange(min, max) {
+            return min + Math.random() * (max - min);
+        }
+        
+        // 检查新分子是否与现有分子重叠
+        function isOverlap(x, y, r, excludeIndex = -1) {
+            if (x - r < 0 || x + r > W || y - r < 0 || y + r > H) return true;
+            for (let i = 0; i < molecules.length; i++) {
+                if (i === excludeIndex) continue;
+                const other = molecules[i];
+                const dx = x - other.x;
+                const dy = y - other.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < (r + other.r) - 0.01) return true;
+            }
+            return false;
+        }
+        
+        function randomVelocity(factor) {
+            const baseSpeed = randomRange(70, 220) * factor;
+            const angle = Math.random() * 2 * Math.PI;
+            return { vx: Math.cos(angle) * baseSpeed, vy: Math.sin(angle) * baseSpeed };
+        }
+        
+        function addMolecule(avoidOverlap = true, retryLimit = 500) {
+            const radius = BASE_RADIUS;
+            let attempts = 0;
+            while (attempts < retryLimit) {
+                const x = randomRange(radius, W - radius);
+                const y = randomRange(radius, H - radius);
+                if (!avoidOverlap || !isOverlap(x, y, radius)) {
+                    const vel = randomVelocity(baseSpeedFactor);
+                    molecules.push({
+                        x: x, y: y, r: radius,
+                        vx: vel.vx, vy: vel.vy,
+                        mass: MASS
+                    });
+                    updateUI();
+                    return true;
+                }
+                attempts++;
+            }
+            return false;
+        }
+        
+        function resetSimulation(targetCount = 38) {
+            molecules = [];
+            let successCount = 0;
+            for (let i = 0; i < targetCount; i++) {
+                let placed = false;
+                for (let attempt = 0; attempt < 1000; attempt++) {
+                    const radius = BASE_RADIUS;
+                    const x = randomRange(radius, W - radius);
+                    const y = randomRange(radius, H - radius);
+                    if (!isOverlap(x, y, radius, -1)) {
+                        const vel = randomVelocity(baseSpeedFactor);
+                        molecules.push({ x, y, r: radius, vx: vel.vx, vy: vel.vy, mass: MASS });
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    // 保底放置
+                    const radius = BASE_RADIUS;
+                    let x = 20 + (i * 23) % (W - 40);
+                    let y = 30 + (i * 17) % (H - 60);
+                    x = Math.min(W - radius, Math.max(radius, x));
+                    y = Math.min(H - radius, Math.max(radius, y));
+                    const vel = randomVelocity(baseSpeedFactor);
+                    molecules.push({ x, y, r: radius, vx: vel.vx, vy: vel.vy, mass: MASS });
+                }
+            }
+            updateUI();
+        }
+        
+        function removeLastMolecule() {
+            if (molecules.length > 1) {
+                molecules.pop();
+            } else if (molecules.length === 1) {
+                molecules.pop();
+                if(molecules.length === 0) addMolecule(true);
+            }
+            updateUI();
+        }
+        
+        function updateUI() {
+            document.getElementById('moleculeCount').innerText = molecules.length;
+            let totalPx = 0, totalPy = 0;
+            for (let m of molecules) {
+                totalPx += m.vx * m.mass;
+                totalPy += m.vy * m.mass;
+            }
+            document.getElementById('totalPx').innerText = totalPx.toFixed(2);
+            document.getElementById('totalPy').innerText = totalPy.toFixed(2);
+        }
+        
+        // ========== 科学边界碰撞: 精确计算碰撞时间 ==========
+        function handleBoundaryCollisionPrecise(m, dt) {
+            let remaining = dt;
+            const r = m.r;
+            const W_ = W, H_ = H;
+            // 最多处理5次连续碰撞（例如角落连续反弹）
+            for (let iter = 0; iter < 5 && remaining > 1e-8; iter++) {
+                let tCollision = Infinity;
+                let hitAxis = null; // 'left', 'right', 'top', 'bottom'
+                
+                // 左墙 x = r
+                if (m.vx < 0) {
+                    const t = (r - m.x) / m.vx;
+                    if (t >= 0 && t < tCollision) { tCollision = t; hitAxis = 'left'; }
+                }
+                // 右墙 x = W - r
+                if (m.vx > 0) {
+                    const t = (W_ - r - m.x) / m.vx;
+                    if (t >= 0 && t < tCollision) { tCollision = t; hitAxis = 'right'; }
+                }
+                // 上墙 y = r
+                if (m.vy < 0) {
+                    const t = (r - m.y) / m.vy;
+                    if (t >= 0 && t < tCollision) { tCollision = t; hitAxis = 'top'; }
+                }
+                // 下墙 y = H - r
+                if (m.vy > 0) {
+                    const t = (H_ - r - m.y) / m.vy;
+                    if (t >= 0 && t < tCollision) { tCollision = t; hitAxis = 'bottom'; }
+                }
+                
+                if (tCollision <= remaining) {
+                    // 移动至碰撞点
+                    m.x += m.vx * tCollision;
+                    m.y += m.vy * tCollision;
+                    // 反弹速度
+                    if (hitAxis === 'left' || hitAxis === 'right') m.vx = -m.vx;
+                    if (hitAxis === 'top' || hitAxis === 'bottom') m.vy = -m.vy;
+                    remaining -= tCollision;
+                    // 微小偏移避免浮点误差造成粘滞
+                    const eps = 1e-6;
+                    if (hitAxis === 'left') m.x = r + eps;
+                    if (hitAxis === 'right') m.x = W_ - r - eps;
+                    if (hitAxis === 'top') m.y = r + eps;
+                    if (hitAxis === 'bottom') m.y = H_ - r - eps;
+                } else {
+                    // 无碰撞，移动剩余时间
+                    m.x += m.vx * remaining;
+                    m.y += m.vy * remaining;
+                    break;
+                }
+            }
+            // 最终确保分子严格在边界内 (防止浮点溢出)
+            m.x = Math.min(W - r, Math.max(r, m.x));
+            m.y = Math.min(H - r, Math.max(r, m.y));
+        }
+        
+        // ========== 分子间完全弹性碰撞 (等质量) ==========
+        function resolveCollision(m1, m2) {
+            const dx = m2.x - m1.x;
+            const dy = m2.y - m1.y;
+            const dist = Math.hypot(dx, dy);
+            const minDist = m1.r + m2.r;
+            if (dist >= minDist) return false;
+            
+            // 位置修正: 避免重叠
+            const overlap = minDist - dist;
+            const angle = Math.atan2(dy, dx);
+            const correctionX = Math.cos(angle) * overlap * 0.5;
+            const correctionY = Math.sin(angle) * overlap * 0.5;
+            if (!isNaN(correctionX)) {
+                m1.x -= correctionX;
+                m1.y -= correctionY;
+                m2.x += correctionX;
+                m2.y += correctionY;
+            }
+            
+            // 速度响应 (完全弹性，质量相等)
+            const nx = dx / dist;
+            const ny = dy / dist;
+            const vrelx = m2.vx - m1.vx;
+            const vrely = m2.vy - m1.vy;
+            const vreln = vrelx * nx + vrely * ny;
+            if (vreln < 0) {
+                const e = 1.0;
+                const m1m = m1.mass, m2m = m2.mass;
+                const reduced = (1 + e) / ((1/m1m) + (1/m2m));
+                const impulse = reduced * vreln;
+                m1.vx += (impulse / m1m) * nx;
+                m1.vy += (impulse / m1m) * ny;
+                m2.vx -= (impulse / m2m) * nx;
+                m2.vy -= (impulse / m2m) * ny;
+            }
+            return true;
+        }
+        
+        // 处理所有分子间碰撞 (多次迭代)
+        function handleCollisions(iter = COLLISION_ITER) {
+            for (let it = 0; it < iter; it++) {
+                for (let i = 0; i < molecules.length; i++) {
+                    for (let j = i + 1; j < molecules.length; j++) {
+                        resolveCollision(molecules[i], molecules[j]);
+                    }
+                }
+            }
+        }
+        
+        // 更新物理：先处理边界精确碰撞（移动+反弹），再处理分子间碰撞
+        function updatePhysics(dt) {
+            // 1. 边界碰撞 (包含移动)
+            for (let m of molecules) {
+                handleBoundaryCollisionPrecise(m, dt);
+            }
+            // 2. 分子间碰撞 (多次迭代，保证分离)
+            handleCollisions(COLLISION_ITER);
+            // 3. 再次边界修正，防止碰撞把分子推到墙外（极少数情况）
+            for (let m of molecules) {
+                const r = m.r;
+                if (m.x - r < 0) m.x = r;
+                if (m.x + r > W) m.x = W - r;
+                if (m.y - r < 0) m.y = r;
+                if (m.y + r > H) m.y = H - r;
+            }
+        }
+        
+        // ========== 绘图 ==========
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            // 网格背景
+            ctx.strokeStyle = "#2b5545";
+            ctx.lineWidth = 0.6;
+            for (let i = 0; i < W; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, H);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i % H);
+                ctx.lineTo(W, i % H);
+                ctx.stroke();
+            }
+            ctx.strokeStyle = "#c6f7e2";
+            ctx.lineWidth = 3;
+            ctx.strokeRect(2, 2, W-4, H-4);
+            
+            for (let m of molecules) {
+                const grad = ctx.createRadialGradient(m.x-3, m.y-3, 2, m.x, m.y, m.r);
+                grad.addColorStop(0, '#ffd966');
+                grad.addColorStop(0.6, '#e09d32');
+                grad.addColorStop(1, '#b45f1b');
+                ctx.beginPath();
+                ctx.arc(m.x, m.y, m.r, 0, Math.PI*2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = "rgba(0,0,0,0.4)";
+                ctx.strokeStyle = "#ffecb3";
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(m.x-2, m.y-2, 2, 0, Math.PI*2);
+                ctx.fillStyle = "#fff9e0";
+                ctx.fill();
+                // 速度矢量
+                ctx.beginPath();
+                ctx.moveTo(m.x, m.y);
+                const len = Math.min(12, Math.hypot(m.vx, m.vy) * 0.15);
+                const angle = Math.atan2(m.vy, m.vx);
+                const tx = m.x + Math.cos(angle) * len;
+                const ty = m.y + Math.sin(angle) * len;
+                ctx.lineTo(tx, ty);
+                ctx.strokeStyle = "#fffbd0";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+            ctx.shadowBlur = 0;
+            ctx.font = "bold 14px 'Segoe UI'";
+            ctx.fillStyle = "#eef5db";
+            ctx.fillText("⚡ 精确边界碰撞 | 动量守恒", W-210, 28);
+        }
+        
+        // ========== 动画循环 ==========
+        let lastTimestamp = 0;
+        function animate(nowMs) {
+            if (!isRunning) {
+                draw();
+                animationId = requestAnimationFrame(animate);
+                return;
+            }
+            if (!lastTimestamp) {
+                lastTimestamp = nowMs;
+                animationId = requestAnimationFrame(animate);
+                draw();
+                return;
+            }
+            let dt = Math.min(0.033, (nowMs - lastTimestamp) / 1000);
+            if (dt <= 0.001) {
+                animationId = requestAnimationFrame(animate);
+                draw();
+                return;
+            }
+            
+            // 物理更新 (精确边界碰撞 + 分子间碰撞)
+            updatePhysics(dt);
+            
+            // 更新UI动量显示
+            let totalPx = 0, totalPy = 0;
+            for (let m of molecules) {
+                totalPx += m.vx * m.mass;
+                totalPy += m.vy * m.mass;
+            }
+            document.getElementById('totalPx').innerText = totalPx.toFixed(2);
+            document.getElementById('totalPy').innerText = totalPy.toFixed(2);
+            document.getElementById('moleculeCount').innerText = molecules.length;
+            
+            draw();
+            lastTimestamp = nowMs;
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // ========== 交互与速度缩放 ==========
+        function randomizeAllVelocities(factor) {
+            for (let m of molecules) {
+                const vel = randomVelocity(factor);
+                m.vx = vel.vx;
+                m.vy = vel.vy;
+            }
+            updateUI();
+        }
+        
+        function rescaleVelocities(ratio) {
+            for (let m of molecules) {
+                m.vx *= ratio;
+                m.vy *= ratio;
+            }
+            updateUI();
+        }
+        
+        function initEvents() {
+            const playPause = document.getElementById('playPauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const addBtn = document.getElementById('addBtn');
+            const removeBtn = document.getElementById('removeBtn');
+            const speedSlider = document.getElementById('speedFactor');
+            const speedSpan = document.getElementById('speedVal');
+            
+            playPause.addEventListener('click', () => {
+                isRunning = !isRunning;
+                playPause.innerText = isRunning ? "⏸️ 暂停" : "▶️ 启动";
+                if (isRunning) lastTimestamp = 0;
+                draw();
+            });
+            
+            resetBtn.addEventListener('click', () => {
+                const currentCount = molecules.length > 0 ? molecules.length : 38;
+                resetSimulation(currentCount);
+                updateUI();
+                const factor = parseFloat(speedSlider.value);
+                baseSpeedFactor = factor;
+                randomizeAllVelocities(factor);
+                updateUI();
+            });
+            
+            addBtn.addEventListener('click', () => {
+                if (molecules.length < 110) {
+                    addMolecule(true, 300);
+                    updateUI();
+                }
+            });
+            
+            removeBtn.addEventListener('click', () => {
+                if (molecules.length > 1) {
+                    removeLastMolecule();
+                } else if (molecules.length === 1) {
+                    molecules.pop();
+                    addMolecule(true);
+                    updateUI();
+                }
+                updateUI();
+            });
+            
+            speedSlider.addEventListener('input', (e) => {
+                const newFactor = parseFloat(e.target.value);
+                speedSpan.innerText = newFactor.toFixed(2);
+                if (molecules.length > 0) {
+                    const ratio = newFactor / baseSpeedFactor;
+                    rescaleVelocities(ratio);
+                }
+                baseSpeedFactor = newFactor;
+                updateUI();
+            });
+        }
+        
+        function init() {
+            resetSimulation(38);
+            initEvents();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        init();
+    })();
+</script>
+</body>
+</html>
