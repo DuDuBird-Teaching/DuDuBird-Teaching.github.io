@@ -142,8 +142,11 @@
             </div>
             <div class="info-panel">
                 <div>分子数: <span id="moleculeCount">0</span></div>
+                <div>总动量 X: <span id="totalPx"> </span></div>
+                <div>总动量 Y: <span id="totalPy"> </span></div>
             </div>
         </div>
+        <footer>⚡ 弹性碰撞 | 精确边界碰撞 (时间反演) | 动量守恒 & 动能守恒</footer>
     </div>
 </div>
 
@@ -261,8 +264,8 @@
                 totalPx += m.vx * m.mass;
                 totalPy += m.vy * m.mass;
             }
-            document.getElementById('totalPx').innerText = totalPx.toFixed(2);
-            document.getElementById('totalPy').innerText = totalPy.toFixed(2);
+            // document.getElementById('totalPx').innerText = totalPx.toFixed(2);
+            // document.getElementById('totalPy').innerText = totalPy.toFixed(2);
         }
         
         // ========== 科学边界碰撞: 精确计算碰撞时间 ==========
@@ -476,8 +479,8 @@
                 totalPx += m.vx * m.mass;
                 totalPy += m.vy * m.mass;
             }
-            document.getElementById('totalPx').innerText = totalPx.toFixed(2);
-            document.getElementById('totalPy').innerText = totalPy.toFixed(2);
+            // document.getElementById('totalPx').innerText = totalPx.toFixed(2);
+            // document.getElementById('totalPy').innerText = totalPy.toFixed(2);
             document.getElementById('moleculeCount').innerText = molecules.length;
             
             draw();
